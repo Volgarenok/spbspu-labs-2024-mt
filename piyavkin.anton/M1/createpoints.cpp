@@ -4,7 +4,7 @@ void piyavkin::createPoints(std::minstd_rand& gen, std::vector< std::pair< doubl
 {
   for (size_t i = 0; i < size; ++i)
   {
-    std::uniform_real_distribution< double > dis(0, 2 * r);
+    std::uniform_real_distribution< double > dis(0, r);
     points.push_back({dis(gen), dis(gen)});
   }
 }
