@@ -4,10 +4,11 @@
 #include <limits>
 #include <random>
 #include <stdexcept>
-#include <stream_guard.hpp>
 #include <string>
+#include <stream_guard.hpp>
+#include "compute_circle_area.hpp"
 
-size_t getArgument(const char* arg)
+size_t getNonNegative(const char* arg)
 {
   if (arg[0] == '-')
   {
@@ -28,14 +29,14 @@ int main(int argc, char* argv[])
   size_t seed = 0;
   try
   {
-    tries = getArgument(argv[1]);
+    tries = getNonNegative(argv[1]);
     if (tries == 0)
     {
       throw std::logic_error("Invalid input");
     }
     if (argc == 3)
     {
-      seed = getArgument(argv[2]);
+      seed = getNonNegative(argv[2]);
     }
   }
   catch (const std::exception& e)
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
       }
       using namespace std::chrono;
       const time_point< system_clock > startTime = system_clock::now();
-      double result = 0.0;
+      double result = kravchenko::computeCircleArea(tries, generator, static_cast< double >(radius), threads);
       const time_point< system_clock > endTime = system_clock::now();
       std::cout << duration< double >(duration_cast< milliseconds >(endTime - startTime)).count() << ' ';
       std::cout << result << '\n';
