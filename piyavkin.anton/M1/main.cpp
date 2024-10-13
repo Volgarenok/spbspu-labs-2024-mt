@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
     std::cerr << "The number of command line arguments does not meet the requirements\n";
     return 1;
   }
-
   size_t tries = 0;
   size_t seed = 0;
   try
@@ -43,7 +42,6 @@ int main(int argc, char* argv[])
     std::cerr << e.what() << '\n';
     return 2;
   }
-
   double r = 0;
   long countThreads = 0;
   std::minstd_rand gen(seed);
@@ -60,14 +58,10 @@ int main(int argc, char* argv[])
       std::vector< std::pair< double, double > > points;
       points.reserve(tries);
       createPoints(gen, points, r, tries);
-      
       auto start = std::chrono::high_resolution_clock::now();
-      
       double square = getSquare(points, r, countThreads);
-      
       auto end = std::chrono::high_resolution_clock::now();
       auto mcs = std::chrono::duration_cast< std::chrono::microseconds >(end - start).count();
-      
       StreamGuard guard(std::cout);
       std::cout << std::fixed << std::setprecision(3);
       std::cout << static_cast< double >(mcs) / 1000 << ' ' << square << '\n';
