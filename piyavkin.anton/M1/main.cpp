@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     try
     {
       using namespace piyavkin;
-      std::vector< std::pair< double, double > > points;
+      data_t points;
       points.reserve(tries);
       std::minstd_rand gen(seed);
       createPoints(gen, points, r, tries);

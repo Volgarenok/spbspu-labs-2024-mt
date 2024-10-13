@@ -10,12 +10,12 @@ bool pred(const std::pair< double, double >& legs, double r)
   return legs.first * legs.first + legs.second * legs.second <= r * r;
 }
 
-void piyavkin::countPoints(const std::vector< std::pair< double, double > >& points, double r, size_t i, size_t amount, size_t& res)
+void piyavkin::countPoints(const data_t& points, double r, size_t i, size_t amount, size_t& res)
 {
   res = std::count_if(points.cbegin() + i, points.cbegin() + i + amount, std::bind(pred, std::placeholders::_1, r));
 }
 
-double piyavkin::getSquare(const std::vector< std::pair< double, double > >& points, size_t r, size_t countThreads)
+double piyavkin::getSquare(const data_t& points, size_t r, size_t countThreads)
 {
   std::vector< std::thread > ths;
   ths.reserve(countThreads - 1);

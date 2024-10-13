@@ -6,6 +6,7 @@
 
 namespace piyavkin
 {
-  void createPoints(std::minstd_rand& gen, std::vector< std::pair< double, double > >& points, double r, size_t size);
+  using data_t = std::vector< std::pair< double, double > >;
+  void createPoints(std::minstd_rand& gen, data_t& points, double r, size_t size);
 }
 #endif

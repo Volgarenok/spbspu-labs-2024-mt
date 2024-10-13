@@ -1,6 +1,6 @@
 #include "createpoints.hpp"
 
-void piyavkin::createPoints(std::minstd_rand& gen, std::vector< std::pair< double, double > >& points, double r, size_t size)
+void piyavkin::createPoints(std::minstd_rand& gen, data_t& points, double r, size_t size)
 {
   for (size_t i = 0; i < size; ++i)
   {
