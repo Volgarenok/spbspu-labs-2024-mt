@@ -3,60 +3,54 @@
 #include <functional>
 #include <numeric>
 #include <thread>
-#include <vector>
 
-namespace kravchenko
-{
-  using Point = std::pair< double, double >;
-  using DataPoint = std::vector< Point >;
-  using DataHit = std::vector< size_t >;
-  using DataHitIt = DataHit::iterator;
-}
-
-kravchenko::Point generatePoint(std::uniform_real_distribution< double > dist, std::minstd_rand& gen)
+kravchenko::Point generatePoint(std::uniform_real_distribution< double >& dist, std::minstd_rand& gen)
 {
   return { dist(gen), dist(gen) };
 }
 
-bool isPointInbound(const kravchenko::Point& p, double radius)
+kravchenko::DataPoint kravchenko::generateSamplePoints(size_t count, std::minstd_rand& generator, double radius)
+{
+  DataPoint points(count);
+  std::uniform_real_distribution< double > dist(-radius, radius);
+  auto bindedGenPoint = std::bind(generatePoint, std::ref(dist), std::ref(generator));
+  std::generate(points.begin(), points.end(), bindedGenPoint);
+  return points;
+}
+
+bool pointPred(const kravchenko::Point& p, double radius)
 {
   return (p.first * p.first + p.second * p.second) <= radius * radius;
 }
 
-void checkPoints(kravchenko::DataPoint points, std::function< bool(const kravchenko::Point&) > pred, kravchenko::DataHitIt res)
+void checkPoints(kravchenko::DataPointConstIt begin, kravchenko::DataPointConstIt end, double radius, kravchenko::DataHitIt res)
 {
-  *res = std::count_if(points.begin(), points.end(), pred);
+  *res = std::count_if(begin, end, std::bind(pointPred, std::placeholders::_1, radius));
 }
 
-double kravchenko::computeCircleArea(size_t tries, std::minstd_rand& generator, double radius, size_t threadsCount)
+double kravchenko::computeCircleArea(const DataPoint& points, double radius, size_t threadsCount)
 {
   std::vector< std::thread > threads;
   threads.reserve(threadsCount - 1);
 
   DataHit hits(threadsCount, 0);
-  size_t perThread = tries / threadsCount;
-  size_t lastThread = perThread + tries % threadsCount;
+  size_t perThread = points.size() / threadsCount;
+  size_t lastThread = perThread + points.size() % threadsCount;
 
-  std::uniform_real_distribution< double > distribution(-radius, radius);
-  auto genBoundPoint = std::bind(generatePoint, std::ref(distribution), std::ref(generator));
-  std::function< bool(const Point&) > pointPred = std::bind(isPointInbound, std::placeholders::_1, radius);
-
-  size_t i = 0;
-  for (; i < threadsCount - 1; ++i)
+  auto begin = points.begin();
+  for (size_t i = 0; i < threadsCount - 1; ++i)
   {
-    DataPoint perThreadPoints(perThread);
-    std::generate(perThreadPoints.begin(), perThreadPoints.end(), genBoundPoint);
-    threads.emplace_back(checkPoints, std::move(perThreadPoints), pointPred, hits.begin() + i);
+    auto end = begin + perThread;
+    threads.emplace_back(checkPoints, begin, end, radius, hits.begin() + i);
+    begin = end;
   }
-  DataPoint lastThreadPoints(lastThread);
-  std::generate(lastThreadPoints.begin(), lastThreadPoints.end(), genBoundPoint);
-  checkPoints(lastThreadPoints, pointPred, hits.begin() + i);
+  checkPoints(begin, begin + lastThread, radius, hits.end() - 1);
 
   for (auto&& thread : threads)
   {
     thread.join();
   }
 
-  double ratio = std::accumulate(hits.cbegin(), hits.cend(), 0ull) / static_cast< double >(tries);
+  double ratio = std::accumulate(hits.cbegin(), hits.cend(), 0ull) / static_cast< double >(points.size());
   return ratio * 4.0 * radius * radius;
 }

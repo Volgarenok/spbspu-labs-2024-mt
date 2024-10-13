@@ -59,11 +59,13 @@ int main(int argc, char* argv[])
     }
     try
     {
+      using namespace kravchenko;
       using namespace std::chrono;
-      const time_point< system_clock > startTime = system_clock::now();
-      double area = kravchenko::computeCircleArea(tries, generator, radius, threads);
-      const time_point< system_clock > endTime = system_clock::now();
-      std::cout << duration< double >(duration_cast< milliseconds >(endTime - startTime)).count() << ' ';
+      const auto startTime = high_resolution_clock::now();
+      DataPoint points = generateSamplePoints(tries, generator, radius);
+      double area = computeCircleArea(points, radius, threads);
+      const auto endTime = high_resolution_clock::now();
+      std::cout << duration_cast< microseconds >(endTime - startTime).count() / 1000.0 << ' ';
       std::cout << area << '\n';
     }
     catch (const std::exception& e)
