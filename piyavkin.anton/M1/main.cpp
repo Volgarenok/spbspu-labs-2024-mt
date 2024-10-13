@@ -44,7 +44,6 @@ int main(int argc, char* argv[])
   }
   double r = 0;
   long countThreads = 0;
-  std::minstd_rand gen(seed);
   while (std::cin >> r >> countThreads)
   {
     if (r <= 0 || countThreads <= 0)
@@ -57,6 +56,7 @@ int main(int argc, char* argv[])
       using namespace piyavkin;
       std::vector< std::pair< double, double > > points;
       points.reserve(tries);
+      std::minstd_rand gen(seed);
       createPoints(gen, points, r, tries);
       auto start = std::chrono::high_resolution_clock::now();
       double square = getSquare(points, r, countThreads);
