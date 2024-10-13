@@ -5,6 +5,7 @@
 #include <iomanip>
 #include "createpoints.hpp"
 #include "getsquare.hpp"
+#include "streamguard.hpp"
 
 size_t getPositiveNum(char* str)
 {
@@ -53,14 +54,16 @@ int main(int argc, char* argv[])
     }
     try
     {
+      using namespace piyavkin;
       std::vector< std::pair< double, double > > points;
       points.reserve(tries);
-      piyavkin::createPoints(gen, points, r, tries);
+      createPoints(gen, points, r, tries);
       auto start = std::chrono::high_resolution_clock::now();
-      double square = piyavkin::getSquare(points, r, countThreads);
+      double square = getSquare(points, r, countThreads);
       auto end = std::chrono::high_resolution_clock::now();
-      std::cout << std::fixed << std::setprecision(3);
       auto mcs = std::chrono::duration_cast< std::chrono::microseconds >(end - start).count();
+      StreamGuard guard(std::cout);
+      std::cout << std::fixed << std::setprecision(3);
       std::cout << static_cast< double >(mcs) / 1000 << ' ' << square << '\n';
     }
     catch (const std::exception& e)
