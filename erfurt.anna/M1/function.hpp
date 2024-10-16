@@ -12,7 +12,7 @@ namespace erfurt
   
   void countPointsInCircul_th(size_t seed, size_t numOfTests, double radius, it_t res);
   size_t countPointsInCircul(c_it_t begin, c_it_t end);
-  double getSquare(size_t seed, size_t numOfTests, double radius, unsigned int countOfThreads);
+  double getSquare(size_t seed, size_t numOfTests, double radius, size_t countOfThreads);
 }
 
 #endif
