@@ -1,4 +1,4 @@
-#include "Function.hpp"
+#include "function.hpp"
 #include <random>
 #include <algorithm>
 #include <numeric>
