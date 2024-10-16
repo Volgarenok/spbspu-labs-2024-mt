@@ -20,7 +20,7 @@ std::istream& novikov::operator>>(std::istream& in, CircleInput& circle)
     return in;
   }
 
-  if (input_radius < 0 || input_thread_count < 1)
+  if (input_radius < 1 || input_thread_count < 1)
   {
     in.setstate(std::ios_base::failbit);
     return in;
