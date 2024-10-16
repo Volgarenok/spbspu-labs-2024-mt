@@ -1,6 +1,5 @@
 #include "CircleInput.hpp"
 #include <istream>
-#include <stdexcept>
 
 std::istream& novikov::operator>>(std::istream& in, CircleInput& circle)
 {
@@ -16,9 +15,15 @@ std::istream& novikov::operator>>(std::istream& in, CircleInput& circle)
 
   in >> input_radius >> input_thread_count;
 
+  if (!in)
+  {
+    return in;
+  }
+
   if (input_radius < 0 || input_thread_count < 1)
   {
-    throw std::invalid_argument("Некорректный ввод!");
+    in.setstate(std::ios_base::failbit);
+    return in;
   }
 
   circle.radius = input_radius;
