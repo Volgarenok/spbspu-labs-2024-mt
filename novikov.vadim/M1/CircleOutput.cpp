@@ -7,7 +7,7 @@ std::ostream& novikov::operator<<(std::ostream& out, const CircleOutput& circle)
 {
   std::ostream::sentry sentry(out);
 
-  if (!out)
+  if (!sentry)
   {
     return out;
   }
