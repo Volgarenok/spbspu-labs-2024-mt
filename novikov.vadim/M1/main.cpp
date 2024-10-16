@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <vector>
 #include <iterator>
-#include <limits>
 #include "CircleInput.hpp"
 
 int main(int argc, char* argv[])
