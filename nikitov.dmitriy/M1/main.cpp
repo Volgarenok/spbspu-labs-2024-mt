@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
       return 2;
     }
     auto begin = std::chrono::high_resolution_clock::now();
-    double square = 0;
+    double square = 0.0;
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
   }
