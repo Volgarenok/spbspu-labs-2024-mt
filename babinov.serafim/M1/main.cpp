@@ -14,13 +14,13 @@ int main(int argc, char* argv[])
   try
   {
     tries = std::stoi(argv[1]);
-    if (tries <= 0)
-    {
-      throw std::invalid_argument("");
-    }
     if (argc > 2)
     {
       seed = std::stoi(argv[2]);
+    }
+    if ((tries <= 0) || (seed < 0))
+    {
+      throw std::invalid_argument("");
     }
   }
   catch (const std::invalid_argument&)
@@ -28,5 +28,4 @@ int main(int argc, char* argv[])
     std::cerr << "Invalid arguments" << '\n';
     return 1;
   }
-
 }
