@@ -1,15 +1,12 @@
+#include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "circles.hpp"
-
-bool isValidData(babinov::CircleData data)
-{
-  return (data.radius > 0) && (data.nThreads > 0);
-}
 
 int main(int argc, char* argv[])
 {
@@ -41,9 +38,11 @@ int main(int argc, char* argv[])
   using namespace babinov;
   using input_it_t = std::istream_iterator< CircleData >;
   std::vector< CircleData > data;
-//  while (!std::cin.eof())
-//  {
-//    std::copy_if(input_it_t(std::cin), input_it_t(), std::back_inserter(data), isValidData);
-//  }
+  std::copy(input_it_t(std::cin), input_it_t(), std::back_inserter(data));
+  if (!std::cin.eof())
+  {
+    std::cerr << "Invalid values" << '\n';
+    return 1;
+  }
   return 0;
 }
