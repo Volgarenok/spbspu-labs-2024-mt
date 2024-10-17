@@ -29,14 +29,19 @@ size_t countPart(int radius, int seed, int tries, size_t id)
 
 double calculateSquare(int radius, int numberOfThreads, int seed, int tries)
 {
-  std::srand(seed);
   std::vector< std::future< size_t > > futures;
   futures.reserve(numberOfThreads);
-  std::vector< size_t > squares(numberOfThreads, 0);
+  std::vector< size_t > counts(numberOfThreads, 0);
   for (int i = 0; i != numberOfThreads; ++i)
   {
     futures.emplace_back(std::async(calculateSquare, radius, seed, tries / numberOfThreads, i));
   }
 
-  return 0.0;
+  std::transform(futures.cbegin(), futures.cend(), counts.begin(),
+  [](auto && future) 
+  {
+    return future.get() 
+  });
+
+  return 4 * radius * radius * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
 }
