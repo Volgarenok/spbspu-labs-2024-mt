@@ -15,13 +15,26 @@ int main(int argc, char* argv[])
   }
   else
   {
-    std::cerr << "Error: Wrong command line arguments\n";
+    std::cerr << "Error: Wrong command line arguments" << '\n';
     return 1;
   }
 
   if (seed < 0 || tries <= 0)
   {
-    std::cerr << "Error: Wrong seed or tries\n";
+    std::cerr << "Error: Wrong seed or tries" << '\n';
     return 1;
   }
+
+  int radius = 0;
+  int numberOfThreads = 0;
+  while (std::cin >> radius && std::cin >> numberOfThreads)
+  {
+    if (radius <= 0 || numberOfThreads <= 0)
+    {
+      std::cerr << "Error: Wrong radius or number of threads" << '\n';
+      return 2;
+    }
+  }
+
+  return 0;
 }
