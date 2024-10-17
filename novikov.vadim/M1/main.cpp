@@ -4,7 +4,8 @@
 #include <stdexcept>
 #include <vector>
 #include <iterator>
-#include "CircleInput.hpp"
+#include <algorithm>
+#include "AreaComputer.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -53,5 +54,6 @@ int main(int argc, char* argv[])
     return -1;
   }
 
-  std::cout << tries << " " << seed << "\n";
+  using output_it_t = std::ostream_iterator< CircleOutput >;
+  std::transform(circles.cbegin(), circles.cend(), output_it_t(std::cout), AreaComputer(tries, seed));
 }
