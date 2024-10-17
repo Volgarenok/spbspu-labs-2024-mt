@@ -1,6 +1,25 @@
 #include "iostream"
 #include "utility"
 #include "random"
+#include "chrono"
+
+class Clicker
+{
+public:
+  Clicker():
+    start_(std::chrono::high_resolution_clock::now())
+  {}
+  double getTime() const
+  {
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    auto t = high_resolution_clock::now();
+    return duration_cast< milliseconds >(t - start_).count();
+  }
+private:
+  std::chrono::time_point< std::chrono::system_clock > start_;
+};
 
 double getSquare(int& r)
 {
@@ -15,7 +34,7 @@ void processMK(int& r, int& threads, size_t& tries, double & seed, std::random_d
   double square = getSquare(r);
   std::cout << "Real square: " << square << '\n';
   std::uniform_real_distribution< double > randomDouble(seed, 10.0);
-  for (size_t i = 0; i <  10; ++i)
+  for (size_t i = 0; i < 10; ++i)
   {
     double num = randomDouble(randomDevice);
     std::cout << num << '\n';
@@ -50,7 +69,17 @@ int main(int argc, char* argv[])
   int radius, countThreads{};
   std::random_device randomDevice;
   std::cout << tries << '\t' << seed << '\n';
-  while (!std::cin.eof())
+  double init{0}, end{0};
+  Clicker cl;
+  init = cl.getTime();
+  std::cout << "start - " << init << '\n';
+  for (int i = 0; i < 100000000; ++i)
+  {
+
+  }
+  end = cl.getTime();
+  std::cout << "End - " << end << '\n';
+  /*while (!std::cin.eof())
   {
     std::cout << "Enter data:\n>";
     std::cin >> radius >> countThreads;
@@ -59,8 +88,6 @@ int main(int argc, char* argv[])
       std::cerr << "Radius and amount of threads can't be negative\n";
       continue;
     }
-    processMK(radius,countThreads,tries, seed, randomDevice);
-    //std::cout << radius << '\t' << countThreads << '\n';
-  }
-
+    std::cout << radius << '\t' << countThreads << '\n';
+  }*/
 }
