@@ -3,6 +3,8 @@
 #include "random"
 #include "chrono"
 
+using Point = std::pair< double, double >;
+
 class Clicker
 {
 public:
@@ -21,27 +23,34 @@ private:
   std::chrono::time_point< std::chrono::system_clock > start_;
 };
 
+Point createPoint(double& seed, std::random_device& randomDevice)
+{
+  std::uniform_real_distribution< double > randomDouble(seed, 10.0);
+  Point p;
+  auto tmp = randomDouble(randomDevice);
+  p.first = tmp;
+  tmp = randomDouble(randomDevice);
+  p.second = tmp;
+  return p;
+}
+
 double getSquare(int& r)
 {
   constexpr double PI = 3.1415926535;
   return PI * r * r;
 }
 
-using Point = std::pair< double, double >;
-
-void processMK(int& r, int& threads, size_t& tries, double & seed, std::random_device& randomDevice)
+void processMK(int& r, int& threads, size_t& tries, double &seed, std::random_device& randomDevice)
 {
   double square = getSquare(r);
   std::cout << "Real square: " << square << '\n';
-  std::uniform_real_distribution< double > randomDouble(seed, 10.0);
+
   for (size_t i = 0; i < 10; ++i)
   {
-    double num = randomDouble(randomDevice);
-    std::cout << num << '\n';
+    Point p = createPoint(seed, randomDevice);
+    std::cout << p.first << '\t' << p.second << '\n';
   }
 }
-
-
 
 int main(int argc, char* argv[])
 {
@@ -69,17 +78,7 @@ int main(int argc, char* argv[])
   int radius, countThreads{};
   std::random_device randomDevice;
   std::cout << tries << '\t' << seed << '\n';
-  double init{0}, end{0};
-  Clicker cl;
-  init = cl.getTime();
-  std::cout << "start - " << init << '\n';
-  for (int i = 0; i < 100000000; ++i)
-  {
-
-  }
-  end = cl.getTime();
-  std::cout << "End - " << end << '\n';
-  /*while (!std::cin.eof())
+  while (!std::cin.eof())
   {
     std::cout << "Enter data:\n>";
     std::cin >> radius >> countThreads;
@@ -88,6 +87,7 @@ int main(int argc, char* argv[])
       std::cerr << "Radius and amount of threads can't be negative\n";
       continue;
     }
-    std::cout << radius << '\t' << countThreads << '\n';
-  }*/
+    processMK(radius, countThreads, tries, seed,r andomDevice);
+    //std::cout << radius << '\t' << countThreads << '\n';
+  }
 }
