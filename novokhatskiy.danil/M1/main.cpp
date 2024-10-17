@@ -2,6 +2,7 @@
 #include "utility"
 #include "random"
 #include "chrono"
+#include "thread"
 
 using Point = std::pair< double, double >;
 
@@ -25,7 +26,7 @@ private:
 
 Point createPoint(double& seed, std::random_device& randomDevice)
 {
-  std::uniform_real_distribution< double > randomDouble(seed, 10.0);
+  std::uniform_real_distribution< double > randomDouble(seed, seed + 15.0);
   Point p;
   auto tmp = randomDouble(randomDevice);
   p.first = tmp;
@@ -36,20 +37,28 @@ Point createPoint(double& seed, std::random_device& randomDevice)
 
 double getSquare(int& r)
 {
-  constexpr double PI = 3.1415926535;
+  constexpr double PI = 3.14159;
   return PI * r * r;
+  //return 4 * r * r;
 }
 
 void processMK(int& r, int& threads, size_t& tries, double &seed, std::random_device& randomDevice)
 {
-  double square = getSquare(r);
-  std::cout << "Real square: " << square << '\n';
-
-  for (size_t i = 0; i < 10; ++i)
+  size_t insidePoints{0};
+  Clicker cl;
+  std::cout << "Real sq - " << getSquare(r) << '\n';
+  for (size_t i = 0; i < tries; ++i)
   {
     Point p = createPoint(seed, randomDevice);
-    std::cout << p.first << '\t' << p.second << '\n';
+    if ((p.first * p.first) + (p.second * p.second) <= (r * r))
+    {
+      insidePoints++;
+    }
   }
+  double time = cl.getTime();
+  double ratio = static_cast< double >(insidePoints / tries);
+  double sq = ratio * 4 * r * r;
+  std::cout << sq << " " << time;
 }
 
 int main(int argc, char* argv[])
@@ -75,6 +84,10 @@ int main(int argc, char* argv[])
   {
     tries = std::stoull(argv[1]);
   }
+  const size_t myThreads = std::thread::hardware_concurrency();
+  std::vector< std::thread > ths;
+  ths.reserve(myThreads);
+  
   int radius, countThreads{};
   std::random_device randomDevice;
   std::cout << tries << '\t' << seed << '\n';
@@ -87,7 +100,7 @@ int main(int argc, char* argv[])
       std::cerr << "Radius and amount of threads can't be negative\n";
       continue;
     }
-    processMK(radius, countThreads, tries, seed,r andomDevice);
-    //std::cout << radius << '\t' << countThreads << '\n';
+    processMK(radius, countThreads, tries, seed, randomDevice);
+    std::cout << '\n';
   }
 }
