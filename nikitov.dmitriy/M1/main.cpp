@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <chrono>
 
 int main(int argc, char* argv[])
 {
@@ -34,6 +36,10 @@ int main(int argc, char* argv[])
       std::cerr << "Error: Wrong radius or number of threads" << '\n';
       return 2;
     }
+    auto begin = std::chrono::high_resolution_clock::now();
+    double square = 0;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
   }
 
   return 0;
