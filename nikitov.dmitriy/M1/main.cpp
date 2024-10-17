@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <iomanip>
 
 int main(int argc, char* argv[])
 {
@@ -29,6 +30,7 @@ int main(int argc, char* argv[])
 
   int radius = 0;
   int numberOfThreads = 0;
+  std::cout << std::fixed << std::setprecision(4);
   while (std::cin >> radius && std::cin >> numberOfThreads)
   {
     if (radius <= 0 || numberOfThreads <= 0)
