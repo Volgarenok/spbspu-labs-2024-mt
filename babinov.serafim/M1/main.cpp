@@ -1,5 +1,6 @@
 #include <iostream>
-#include <cstdlib>
+#include <stdexcept>
+#include <string>
 
 int main(int argc, char* argv[])
 {
@@ -8,15 +9,24 @@ int main(int argc, char* argv[])
     std::cerr << "Too few arguments" << '\n';
     return 1;
   }
-  size_t tries = std::strtoull(argv[1], nullptr, 10);
-  if (tries == 0)
+  int tries = 0;
+  int seed = 0;
+  try
   {
-    std::cerr << "Invalid tries number" << '\n';
+    tries = std::stoi(argv[1]);
+    if (tries <= 0)
+    {
+      throw std::invalid_argument("");
+    }
+    if (argc > 2)
+    {
+      seed = std::stoi(argv[2]);
+    }
+  }
+  catch (const std::invalid_argument&)
+  {
+    std::cerr << "Invalid arguments" << '\n';
     return 1;
   }
-  size_t seed = 0;
-  if (argc > 2)
-  {
-    seed = std::strtoull(argv[2], nullptr, 10);
-  }
+
 }
