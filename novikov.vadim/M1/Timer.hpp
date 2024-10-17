@@ -17,4 +17,5 @@ namespace novikov
     std::chrono::time_point< std::chrono::system_clock > start_;
   };
 }
+
 #endif

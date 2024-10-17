@@ -18,6 +18,6 @@ namespace novikov
     std::basic_ios< char >::fmtflags flags_;
     std::streamsize precision_;
   };
-};
+}
 
 #endif

@@ -45,7 +45,6 @@ novikov::CircleOutput novikov::AreaComputer::operator()(const CircleInput& circl
   double total_area = 4 * std::pow(circle.radius, 2) * std::accumulate(hits_.cbegin(), hits_.cend(), 0) / tries_;
 
   return {total_time, total_area};
-
 }
 
 novikov::AreaComputer::point_t novikov::AreaComputer::generatePoint(std::mt19937& generator, double radius, size_t hits_index)
