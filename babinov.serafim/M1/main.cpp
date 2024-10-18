@@ -35,8 +35,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  using namespace babinov;
-  CircleData data;
+  babinov::CircleData data;
   while (!std::cin.eof())
   {
     std::cin >> data;
