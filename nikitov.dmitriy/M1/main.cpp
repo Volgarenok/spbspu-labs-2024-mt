@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iomanip>
 #include "calculate_square.hpp"
+#include "scope_guard.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -29,9 +30,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  using namespace nikitov;
   int radius = 0;
   int numberOfThreads = 0;
-  std::cout << std::fixed << std::setprecision(3);
+
+  ScopeGuard scopeGuard(std::cout);
+  std::cout << std::setprecision(3) << std::fixed;
   while (std::cin >> radius && std::cin >> numberOfThreads)
   {
     if (radius <= 0 || numberOfThreads <= 0)
@@ -40,7 +44,7 @@ int main(int argc, char* argv[])
       return 2;
     }
     auto begin = std::chrono::high_resolution_clock::now();
-    double square = nikitov::calculateSquare(radius, numberOfThreads, seed, tries);
+    double square = calculateSquare(radius, numberOfThreads, seed, tries);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
   }
