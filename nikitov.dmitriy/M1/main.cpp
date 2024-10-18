@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
       return 2;
     }
     auto begin = std::chrono::high_resolution_clock::now();
-    double square = calculateSquare(radius, numberOfThreads, seed, tries);
+    double square = nikitov::calculateSquare(radius, numberOfThreads, seed, tries);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
   }

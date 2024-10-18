@@ -3,8 +3,9 @@
 
 #include <cstddef>
 
-size_t countPart(int radius, int seed, int tries, size_t id);
-
-double calculateSquare(int radius, int numberOfThreads, int seed, int tries);
+namespace nikitov
+{
+  double calculateSquare(int radius, int numberOfThreads, int seed, int tries);
+}
 
 #endif

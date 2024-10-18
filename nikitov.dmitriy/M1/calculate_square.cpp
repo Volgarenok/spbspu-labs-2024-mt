@@ -29,7 +29,7 @@ size_t countPart(int radius, int seed, int tries, size_t id)
   return count;
 }
 
-double calculateSquare(int radius, int numberOfThreads, int seed, int tries)
+double nikitov::calculateSquare(int radius, int numberOfThreads, int seed, int tries)
 {
   std::vector< std::future< size_t > > futures;
   futures.reserve(numberOfThreads);
