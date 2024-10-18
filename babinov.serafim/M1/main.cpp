@@ -36,13 +36,15 @@ int main(int argc, char* argv[])
   }
 
   using namespace babinov;
-  using input_it_t = std::istream_iterator< CircleData >;
-  std::vector< CircleData > data;
-  std::copy(input_it_t(std::cin), input_it_t(), std::back_inserter(data));
-  if (!std::cin.eof())
+  CircleData data;
+  while (!std::cin.eof())
   {
-    std::cerr << "Invalid values" << '\n';
-    return 1;
+    std::cin >> data;
+    if (std::cin.fail())
+    {
+      std::cerr << "Invalid values" << '\n';
+      return 1;
+    }
   }
   return 0;
 }
