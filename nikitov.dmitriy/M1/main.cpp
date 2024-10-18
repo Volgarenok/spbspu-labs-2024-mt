@@ -1,52 +1,68 @@
 #include <iostream>
-#include <string>
-#include <chrono>
 #include <iomanip>
+#include <chrono>
+#include <string>
 #include "calculate_square.hpp"
 #include "scope_guard.hpp"
 
 int main(int argc, char* argv[])
 {
-  int seed = 0;
-  int tries = 0;
-  if (argc == 2)
+  int inputTries = 0;
+  int inputSeed = 0;
+  try
   {
-    tries = std::stoi(argv[1]);
+    if (argc == 2)
+    {
+      inputTries = std::stoi(argv[1]);
+    }
+    else if (argc == 3)
+    {
+      inputTries = std::stoi(argv[1]);
+      inputSeed = std::stoi(argv[2]);
+    }
+    else
+    {
+      throw std::logic_error("Wrong number of agruments");
+    }
+
+    if (inputTries <= 0 || inputSeed < 0)
+    {
+      throw std::logic_error("Wrong seed or tries");
+    }
   }
-  else if (argc == 3)
+  catch (const std::exception& e)
   {
-    tries = std::stoi(argv[1]);
-    seed = std::stoi(argv[2]);
-  }
-  else
-  {
-    std::cerr << "Error: Wrong command line arguments" << '\n';
+    std::cerr << "Error: " << e.what() << '\n';
     return 1;
   }
 
-  if (seed < 0 || tries <= 0)
-  {
-    std::cerr << "Error: Wrong seed or tries" << '\n';
-    return 1;
-  }
+  size_t seed = inputSeed;
+  size_t tries = inputTries;
 
   using namespace nikitov;
-  int radius = 0;
-  int numberOfThreads = 0;
-
   ScopeGuard scopeGuard(std::cout);
   std::cout << std::setprecision(3) << std::fixed;
-  while (std::cin >> radius && std::cin >> numberOfThreads)
+
+  int radius = 0;
+  int numberOfThreads = 0;
+  try
   {
-    if (radius <= 0 || numberOfThreads <= 0)
+    while (std::cin >> radius && std::cin >> numberOfThreads)
     {
-      std::cerr << "Error: Wrong radius or number of threads" << '\n';
-      return 2;
+      if (radius <= 0 || numberOfThreads <= 0)
+      {
+        throw std::logic_error("Error: Wrong radius or number of threads");
+      }
+      auto begin = std::chrono::high_resolution_clock::now();
+      double square = calculateSquare(radius, numberOfThreads, seed, tries);
+      auto end = std::chrono::high_resolution_clock::now();
+      std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
     }
-    auto begin = std::chrono::high_resolution_clock::now();
-    double square = calculateSquare(radius, numberOfThreads, seed, tries);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "Error: " << e.what() << '\n';
+    return 2;
   }
 
   return 0;
