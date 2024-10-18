@@ -9,7 +9,7 @@ namespace piyavkin
   {
   public:
     void insert(const Circle& c);
-  // private:
+  private:
     std::vector< Circle > set_;
   };
 }
