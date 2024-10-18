@@ -6,7 +6,7 @@
 
 namespace erfurt
 {
-  using data_t = std::vector<size_t>;
+  using data_t = std::vector< size_t >;
   using it_t = data_t::iterator;
   using c_it_t = data_t::const_iterator;
   

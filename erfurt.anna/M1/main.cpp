@@ -5,15 +5,6 @@
 #include "streamGuard.hpp"
 #include "function.hpp"
 
-/*size_t getNumber(char* s)
-{
-  if (s[0] == '-')
-  {
-    throw std::logic_error("It is not positive number\n");
-  }
-  return std::stoull(s);
-}*/
-
 int main(int argc, char* argv[])
 {
   if (argc > 3 || argc < 2)
@@ -38,7 +29,7 @@ int main(int argc, char* argv[])
   }
   if (tries <= 0 || seed < 0)
   {
-    std::cerr << "the number of tests is not positive or generator initialization value is negative\n";
+    std::cerr << "The number of tests is not positive or generator initialization value is negative\n";
     return 3;
   }
   using namespace erfurt;
@@ -56,7 +47,7 @@ int main(int argc, char* argv[])
     auto start = timer.now();
     try
     {
-        square = getSquare(static_cast<size_t>(seed), static_cast<size_t>(tries), radius, static_cast<size_t>(threads));
+        square = getSquare(static_cast< size_t >(seed), static_cast< size_t >(tries), radius, static_cast< size_t >(threads));
     }
     catch(const std::exception& e)
     {
@@ -66,7 +57,7 @@ int main(int argc, char* argv[])
     auto end = timer.now();
     StreamGuard guard(std::cout);
     std::cout << std::fixed << std::setprecision(3);
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ";
+    std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count() << " ";
     std::cout << square << '\n';
   }
   if (!std::cin.eof())

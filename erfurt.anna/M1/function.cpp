@@ -9,7 +9,7 @@ void erfurt::countPointsInCircul_th(size_t seed, size_t numOfTests, double radiu
 {
   size_t countPoints = 0;
   std::mt19937 generator(seed);
-  std::uniform_real_distribution<double> distribution(-radius, radius);
+  std::uniform_real_distribution< double > distribution(-radius, radius);
   for (size_t i = 0; i < numOfTests; ++i)
   {
     double x = distribution(generator);
@@ -30,7 +30,7 @@ size_t erfurt::countPointsInCircul(c_it_t begin, c_it_t end)
 
 double erfurt::getSquare(size_t seed, size_t numOfTests, double radius, size_t countOfThreads)
 {
-  size_t threads = std::min(static_cast<size_t>(std::thread::hardware_concurrency()) - 1, countOfThreads);
+  size_t threads = std::min(static_cast< size_t >(std::thread::hardware_concurrency()) - 1, countOfThreads);
   std::vector< std::thread > ths;
   ths.reserve(threads - 1);
   std::vector< size_t > results(threads, 0);
