@@ -19,7 +19,7 @@ size_t countPart(size_t radius, size_t seed, size_t tries, size_t id)
     }
     double x = distribution(randomizer);
     double y = distribution(randomizer);
-    if (x * x + y * y <= radius * radius)
+    if (std::hypot(x, y) <= radius)
     {
       ++count;
     }
@@ -29,6 +29,9 @@ size_t countPart(size_t radius, size_t seed, size_t tries, size_t id)
 
 double nikitov::calculateSquare(size_t radius, size_t numberOfThreads, size_t seed, size_t tries)
 {
+  size_t threads = std::thread::hardware_concurrency();
+  numberOfThreads = std::min(numberOfThreads, threads);
+
   std::vector< std::future< size_t > > futures;
   futures.reserve(numberOfThreads - 1);
   std::vector< size_t > counts(numberOfThreads, 0);
@@ -45,5 +48,5 @@ double nikitov::calculateSquare(size_t radius, size_t numberOfThreads, size_t se
     return future.get();
   });
 
-  return 4.0 * radius * radius * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
+  return 4.0 * std::pow(radius, 2) * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
 }
