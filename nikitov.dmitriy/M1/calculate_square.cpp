@@ -1,15 +1,17 @@
 #include "calculate_square.hpp"
 #include <cstdlib>
+#include <cstddef>
 #include <thread>
 #include <future>
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <numeric>
 
 size_t countPart(int radius, int seed, int tries, size_t id)
 {
   std::default_random_engine randomizer(seed);
-  std::uniform_int_distribution< int > distribution(- radius, radius);
+  std::uniform_real_distribution< double > distribution(- radius, radius);
   size_t count = 0;
   for (int i = 0; i != tries; ++i)
   {
@@ -17,8 +19,8 @@ size_t countPart(int radius, int seed, int tries, size_t id)
     {
       distribution(randomizer);
     }
-    int x = distribution(randomizer);
-    int y = distribution(randomizer);
+    double x = distribution(randomizer);
+    double y = distribution(randomizer);
     if (x * x + y * y <= radius * radius)
     {
       ++count;
@@ -34,14 +36,14 @@ double calculateSquare(int radius, int numberOfThreads, int seed, int tries)
   std::vector< size_t > counts(numberOfThreads, 0);
   for (int i = 0; i != numberOfThreads; ++i)
   {
-    futures.emplace_back(std::async(calculateSquare, radius, seed, tries / numberOfThreads, i));
+    futures.emplace_back(std::async(countPart, radius, seed, tries / numberOfThreads, i));
   }
 
-  std::transform(futures.cbegin(), futures.cend(), counts.begin(),
-  [](auto && future) 
+  std::transform(futures.begin(), futures.end(), counts.begin(),
+  [](auto && future)
   {
-    return future.get() 
+    return future.get();
   });
 
-  return 4 * radius * radius * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
+  return 4.0 * radius * radius * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
 }
