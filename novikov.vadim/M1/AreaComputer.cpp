@@ -38,7 +38,7 @@ novikov::CircleOutput novikov::AreaComputer::operator()(const CircleInput& circl
 
   for (auto&& th : threads)
   {
-      th.join();
+    th.join();
   }
 
   double total_time = timer.getElapsedTime() - start;
@@ -49,7 +49,7 @@ novikov::CircleOutput novikov::AreaComputer::operator()(const CircleInput& circl
 
 novikov::AreaComputer::point_t novikov::AreaComputer::generatePoint(std::mt19937& generator, double radius, size_t hits_index)
 {
-  std::uniform_real_distribution<double> distribution(-radius, radius);
+  std::uniform_real_distribution< double > distribution(-radius, radius);
 
   double x = distribution(generator);
   double y = distribution(generator);
