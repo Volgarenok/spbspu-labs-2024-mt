@@ -1,13 +1,13 @@
-#ifndef GENERATOR_HPP
-#define GENERATOR_HPP
+#ifndef RANDOMIZER_HPP
+#define RANDOMIZER_HPP
 #include <random>
 
 namespace babinov
 {
-  class Generator
+  class Randomizer
   {
    public:
-    Generator(size_t seed, double from, double to);
+    Randomizer(size_t seed, double from, double to);
     double next();
    private:
     std::uniform_real_distribution< double > dist;
