@@ -1,15 +1,19 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
-#include <string>
-#include "point.hpp"
+#include <istream>
+#include "base-types.hpp"
 
-class Circle
+namespace piyavkin
 {
-public:
-  Circle(const std::string& name, const point_t& c, size_t r);
-// private:
-  std::string name_;
-  point_t center_;
-  size_t radius_;
-};
+  class Circle
+  {
+  public:
+    Circle();
+    Circle(const point_t& c, double r);
+  // private:
+    point_t center_;
+    double radius_;
+  };
+  std::istream& operator>>(std::istream& in, Circle& c);
+}
 #endif
