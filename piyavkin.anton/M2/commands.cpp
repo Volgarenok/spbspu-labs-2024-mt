@@ -14,3 +14,10 @@ void piyavkin::inputCircle(std::istream& in, std::map< std::string, Circle >& mp
   }
   mp[name] = c;
 }
+
+void piyavkin::outputCircle(std::istream& in, std::ostream& out, const std::map< std::string, Circle >& mp)
+{
+  std::string name;
+  in >> name;
+  out << mp.at(name) << '\n';
+}
