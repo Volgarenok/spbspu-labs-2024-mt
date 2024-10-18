@@ -6,12 +6,12 @@
 #include <random>
 #include <vector>
 
-size_t countPart(int radius, int seed, int tries, size_t id)
+size_t countPart(size_t radius, size_t seed, size_t tries, size_t id)
 {
   std::default_random_engine randomizer(seed);
-  std::uniform_real_distribution< double > distribution(- radius, radius);
+  std::uniform_real_distribution< double > distribution(0, radius);
   size_t count = 0;
-  for (int i = 0; i != tries; ++i)
+  for (size_t i = 0; i != tries; ++i)
   {
     for (size_t j = 0; j != id * 2; ++j)
     {
@@ -27,15 +27,17 @@ size_t countPart(int radius, int seed, int tries, size_t id)
   return count;
 }
 
-double nikitov::calculateSquare(int radius, int numberOfThreads, int seed, int tries)
+double nikitov::calculateSquare(size_t radius, size_t numberOfThreads, size_t seed, size_t tries)
 {
   std::vector< std::future< size_t > > futures;
-  futures.reserve(numberOfThreads);
+  futures.reserve(numberOfThreads - 1);
   std::vector< size_t > counts(numberOfThreads, 0);
-  for (int i = 0; i != numberOfThreads; ++i)
+
+  for (size_t i = 0; i != numberOfThreads - 1; ++i)
   {
     futures.emplace_back(std::async(countPart, radius, seed, tries / numberOfThreads, i));
   }
+  counts.back() = countPart(radius, seed, tries / numberOfThreads + tries % numberOfThreads, numberOfThreads - 1);
 
   std::transform(futures.begin(), futures.end(), counts.begin(),
   [](auto && future)

@@ -56,7 +56,8 @@ int main(int argc, char* argv[])
       auto begin = std::chrono::high_resolution_clock::now();
       double square = calculateSquare(radius, numberOfThreads, seed, tries);
       auto end = std::chrono::high_resolution_clock::now();
-      std::cout << std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count() << ' ' << square << '\n';
+      auto time = std::chrono::duration_cast< std::chrono::microseconds >(end - begin).count();
+      std::cout << static_cast< double >(time) / 1000 << ' ' << square << '\n';
     }
   }
   catch (const std::exception& e)
