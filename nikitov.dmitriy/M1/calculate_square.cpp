@@ -1,12 +1,10 @@
 #include "calculate_square.hpp"
-#include <cstdlib>
-#include <cstddef>
+#include <algorithm>
+#include <numeric>
 #include <thread>
 #include <future>
-#include <vector>
-#include <algorithm>
 #include <random>
-#include <numeric>
+#include <vector>
 
 size_t countPart(int radius, int seed, int tries, size_t id)
 {
