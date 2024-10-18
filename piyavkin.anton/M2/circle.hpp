@@ -11,6 +11,7 @@ namespace piyavkin
   public:
     Circle();
     Circle(const point_t& c, double r);
+    rectangle_t getFrame() const;
   private:
     point_t center_;
     double radius_;

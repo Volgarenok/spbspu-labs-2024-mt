@@ -21,3 +21,10 @@ void piyavkin::outputCircle(std::istream& in, std::ostream& out, const std::map<
   in >> name;
   out << mp.at(name) << '\n';
 }
+
+void piyavkin::outputFrame(std::istream& in, std::ostream& out, const std::map< std::string, Circle >& mp)
+{
+  std::string name;
+  in >> name;
+  out << mp.at(name).getFrame() << '\n';
+}

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <limits>
 #include <functional>
 #include "circle.hpp"
 #include "commands.hpp"
@@ -11,6 +12,7 @@ int main()
   std::map< std::string, std::function< void(std::istream&) > > cmd;
   cmd["circle"] = std::bind(inputCircle, std::placeholders::_1, std::ref(mp));
   cmd["show"] = std::bind(outputCircle, std::placeholders::_1, std::ref(std::cout), std::cref(mp));
+  cmd["frame"] = std::bind(outputFrame, std::placeholders::_1, std::ref(std::cout), std::cref(mp));
   std::string name;
   while (std::cin >> name)
   {
@@ -22,5 +24,7 @@ int main()
     {
       std::cerr << e.what() << '\n';
     }
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
 }

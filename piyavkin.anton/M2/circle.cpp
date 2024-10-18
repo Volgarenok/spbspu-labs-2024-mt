@@ -9,6 +9,11 @@ piyavkin::Circle::Circle(const point_t& c, double r):
   radius_(r)
 {}
 
+piyavkin::rectangle_t piyavkin::Circle::getFrame() const
+{
+  return {{center_.x - radius_, center_.y - radius_}, {center_.x + radius_, center_.y + radius_}};
+}
+
 std::istream& piyavkin::operator>>(std::istream& in, Circle& c)
 {
   std::istream::sentry guard(in);
@@ -39,6 +44,6 @@ std::ostream& piyavkin::operator<<(std::ostream& out, const Circle& c)
   {
     return out;
   }
-  out << c.radius_ << " (" << c.center_.x << ' ' << c.center_.y << ')'; 
+  out << c.radius_ << ' ' << c.center_; 
   return out;
 }
