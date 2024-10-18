@@ -9,6 +9,7 @@ namespace babinov
    public:
     Randomizer(size_t seed, double from, double to);
     double next();
+    void skip(size_t number);
    private:
     std::uniform_real_distribution< double > dist;
     std::default_random_engine gen;

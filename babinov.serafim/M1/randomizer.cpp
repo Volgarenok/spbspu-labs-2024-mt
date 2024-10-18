@@ -9,3 +9,11 @@ double babinov::Randomizer::next()
 {
   return dist(gen);
 }
+
+void babinov::Randomizer::skip(size_t number)
+{
+  for (size_t i = 0; i < number; ++i)
+  {
+    next();
+  }
+}
