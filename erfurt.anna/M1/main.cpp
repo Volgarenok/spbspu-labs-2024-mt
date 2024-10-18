@@ -5,14 +5,14 @@
 #include "streamGuard.hpp"
 #include "function.hpp"
 
-size_t getNumber(char* s)
+/*size_t getNumber(char* s)
 {
   if (s[0] == '-')
   {
     throw std::logic_error("It is not positive number\n");
   }
   return std::stoull(s);
-}
+}*/
 
 int main(int argc, char* argv[])
 {
@@ -21,24 +21,25 @@ int main(int argc, char* argv[])
     std::cerr << "The number of command line arguments does not meet the requirements\n";
     return 1;
   }
-  size_t tries = 0;
-  size_t seed = 0;
+  int tries = 0;
+  int seed = 0;
   try
   {
-    tries = getNumber(argv[1]);
-    if (tries == 0)
-    {
-      throw std::logic_error("The number of tests is not positive");
-    }
+    tries = std::stoi(argv[1]);
     if (argc == 3)
     {
-      seed = getNumber(argv[2]);
+      seed = std::stoi(argv[2]);
     }
   }
-  catch (const std::logic_error& e)
+  catch (const std::invalid_argument& e)
   {
     std::cerr << e.what() << '\n';
     return 2;
+  }
+  if (tries <= 0 || seed < 0)
+  {
+    std::cerr << "the number of tests is not positive or generator initialization value is negative\n";
+    return 3;
   }
   using namespace erfurt;
   std::chrono::steady_clock timer;
@@ -49,17 +50,18 @@ int main(int argc, char* argv[])
     if (radius <= 0 || threads <= 0)
     {
       std::cerr << "The entered radius or threads is not positive";
+      return 4;
     }
     double square = 0.0;
     auto start = timer.now();
     try
     {
-        square = getSquare(seed, tries, radius, static_cast<size_t>(threads));
+        square = getSquare(static_cast<size_t>(seed), static_cast<size_t>(tries), radius, static_cast<size_t>(threads));
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        return 4;
+        return 5;
     }
     auto end = timer.now();
     StreamGuard guard(std::cout);
@@ -70,7 +72,7 @@ int main(int argc, char* argv[])
   if (!std::cin.eof())
   {
     std::cerr << "Incorrect radius or number of threads\n";
-    return 5;
+    return 6;
   }
   return 0;
 }

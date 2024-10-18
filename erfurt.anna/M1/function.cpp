@@ -32,7 +32,7 @@ double erfurt::getSquare(size_t seed, size_t numOfTests, double radius, size_t c
 {
   size_t threads = std::min(static_cast<size_t>(std::thread::hardware_concurrency()) - 1, countOfThreads);
   std::vector< std::thread > ths;
-  ths.reserve(threads);
+  ths.reserve(threads - 1);
   std::vector< size_t > results(threads, 0);
   size_t per_th = numOfTests / threads;
   size_t last_th = per_th + numOfTests % threads;
