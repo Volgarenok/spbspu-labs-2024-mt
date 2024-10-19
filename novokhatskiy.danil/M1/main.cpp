@@ -1,20 +1,22 @@
-#include <iostream>
-#include <utility>
-#include <random>
-#include <chrono>
 #include <algorithm>
+#include <chrono>
+#include <exception>
 #include <functional>
 #include <iomanip>
-#include <exception>
+#include <iostream>
+#include <random>
 #include <thread>
+#include <utility>
 #include "StreamGuard.hpp"
 
 using Point = std::pair< double, double >;
 using vec_p = std::vector< Point >;
+using const_it_p = vec_p::const_iterator;
+using val_it = std::vector< size_t >::iterator;
 
 Point createPoint(double seed, std::random_device& randomDevice)
 {
-  std::uniform_real_distribution< double > randomDouble(seed, seed + 15.0);
+  std::uniform_real_distribution< double > randomDouble(0, seed + 15.0);
   Point p;
   auto tmp = randomDouble(randomDevice);
   p.first = tmp;
@@ -31,14 +33,18 @@ vec_p generateValues(size_t tries, double seed, std::random_device& randomDevice
   return res;
 }
 
-bool isPointInsideCircle(size_t r, Point& p)
+bool isPointInsideCircle(const Point& p, size_t r)
 {
   return (p.first * p.first) + (p.second * p.second) <= (r * r);
 }
 
+void checkInsidePoints(const_it_p begin, const_it_p end, double r, val_it res)
+{
+  *res = std::count_if(begin, end, std::bind(isPointInsideCircle, std::placeholders::_1, r));
+}
+
 double processMK(size_t r, size_t threads, size_t tries, double seed, std::random_device& randomDevice)
 {
-  size_t insidePoints{0};
   if (threads > std::thread::hardware_concurrency() - 1)
   {
     threads = static_cast< size_t >(std::thread::hardware_concurrency() - 1);
@@ -46,19 +52,22 @@ double processMK(size_t r, size_t threads, size_t tries, double seed, std::rando
   std::vector< std::thread > ths;
   ths.reserve(threads - 1);
   size_t per_th = tries / threads;
-  for (size_t i = 0; i < tries; ++i)
+  size_t last_th = per_th * tries % threads;
+  vec_p points = generateValues(tries, seed, randomDevice);
+  auto begin = points.begin();
+  std::vector< size_t > res(threads, 0);
+  for (size_t i = 0; i < threads - 1; ++i)
   {
-    Point p = createPoint(seed, randomDevice);
-    if (isPointInsideCircle(r, p))
-    {
-      insidePoints++;
-    }
+    auto end = begin + per_th;
+    ths.emplace_back(checkInsidePoints, begin, end, r, res.begin() + i);
+    begin = end;
   }
-  for (auto && th : ths)
+  checkInsidePoints(begin, begin + last_th, r, res.end() - 1);
+  for (auto&& th : ths)
   {
     th.join();
   }
-  auto ratio = static_cast< double >(insidePoints / tries);
+  auto ratio = static_cast< double >(std::accumulate(res.cbegin(), res.cend(), 0ull) / tries);
   return ratio * 4 * r * r;
 }
 
@@ -99,8 +108,11 @@ int main(int argc, char* argv[])
         std::cerr << "Radius and amount of threads can't be negative or zero\n";
         continue;
       }
-      processMK(radius, countThreads, tries, seed, randomDevice);
-      std::cout << '\n';
+      auto init = std::chrono::high_resolution_clock::now();
+      auto square = processMK(radius, countThreads, tries, seed, randomDevice);
+      auto end = std::chrono::high_resolution_clock::now();
+      auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - init).count();
+      std::cout << time << ' ' << square << '\n';
     }
   }
   catch (std::exception& e)
