@@ -1,13 +1,34 @@
 #include <algorithm>
 #include <chrono>
+#include <future>
 #include <iostream>
-#include <iterator>
-#include <limits>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "circles.hpp"
+
+double calculateArea(babinov::CircleData data, size_t seed, size_t tries)
+{
+  std::vector< std::future< size_t > > futures;
+  futures.reserve(data.nThreads - 1);
+  std::vector< size_t > results(data.nThreads, 0);
+
+  size_t ts = tries;
+  size_t triesForOne = tries / data.nThreads;
+  for (size_t i = 0; i < data.nThreads - 1; ++i, ts -= triesForOne)
+  {
+    futures.emplace_back(std::async(babinov::calculateTargetPoints, seed, triesForOne, tries - ts, data.radius));
+  }
+  results.back() = babinov::calculateTargetPoints(seed, ts, tries - ts, data.radius);
+  std::transform(futures.begin(), futures.end(), results.begin(),
+   [](auto && ft)
+   {
+     return ft.get();
+   });
+  return std::accumulate(results.cbegin(), results.cend(), 0.0) / tries * 4 * data.radius * data.radius;
+}
 
 int main(int argc, char* argv[])
 {
@@ -46,9 +67,10 @@ int main(int argc, char* argv[])
       return 1;
     }
     auto start = std::chrono::steady_clock::now();
-    double square = babinov::getSquare(data, seed, tries);
+    double square = calculateArea(data, seed, tries);
     auto end = std::chrono::steady_clock::now();
-    std::cout << square << ' ' << std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count() << '\n';
+    double time = std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count();
+    std::cout << square << ' ' << time << '\n';
   }
   return 0;
 }
