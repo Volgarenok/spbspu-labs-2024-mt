@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 #include <iterator>
 #include <limits>
@@ -44,7 +45,10 @@ int main(int argc, char* argv[])
       std::cerr << "Invalid values" << '\n';
       return 1;
     }
-    std::cout << babinov::getSquare(data, seed, tries) << '\n';
+    auto start = std::chrono::steady_clock::now();
+    double square = babinov::getSquare(data, seed, tries);
+    auto end = std::chrono::steady_clock::now();
+    std::cout << square << ' ' << std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count() << '\n';
   }
   return 0;
 }
