@@ -15,9 +15,9 @@ namespace mtt
     {
       using std::chrono::high_resolution_clock;
       using std::chrono::duration_cast;
-      using std::chrono::milliseconds;
+      using std::chrono::microseconds;
       auto t = high_resolution_clock::now();
-      return duration_cast< milliseconds >(t - start_).count();
+      return double(duration_cast< microseconds >(t - start_).count()) / 1000;
     }
 
    private:

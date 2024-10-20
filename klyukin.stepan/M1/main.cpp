@@ -3,21 +3,12 @@
 #include <numeric>
 #include <thread>
 #include <cstdlib>
+#include <iomanip>
 #include "clicker.hh"
 
 
-// value_t sum_data(c_it_t begin, c_it_t end)
-// {
-//   value_t res = value_t{0};
-//   for (c_it_t c = begin; c != end; c++)
-//   {
-//     res += *c + std::rand() % 2;
-//   }
-//   return res;
-// }
-
 double getRandomCoordinate() {
-  return (double)(rand()) / (double)(RAND_MAX) - 0.5;
+  return double(rand()) / RAND_MAX - 0.5;
 }
 
 void countHits(int tries, std::vector< int >::iterator res) {
@@ -43,7 +34,6 @@ double getArea(int tries, int radius, int threads) {
   {
     th.join();
   }
-  // std::cout << std::accumulate(results.cbegin(), results.cend(), 0) << '\n';
   double prob = double(std::accumulate(results.cbegin(), results.cend(), 0)) / tries;
   return 4 * radius * radius * prob;
 }
@@ -86,20 +76,12 @@ int main(int argc, char** argv) {
   }
   std::srand(seed);
 
+  std::cout << std::fixed << std::setprecision(3);
   try {
     readTasksWriteResults(tries, std::cin, std::cout);
   } catch (const std::logic_error& error) {
     std::cerr << error.what() << '\n';
     return 4;
   }
-
-  // for (int i = 0; i < tries; i++) {
-  //   std::cout << getRandomCoordinate() << '\n';
-  // }
-  // for (int i = 0; i < tries; i++) {
-  //   double x = getRandomCoordinate();
-  //   double y = getRandomCoordinate();
-  //   std::cout << (x * x + y * y < 0.25) << '\n';
-  // }
   return 0;
 }
