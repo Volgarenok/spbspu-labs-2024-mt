@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <future>
+#include <iomanip>
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
@@ -58,19 +59,19 @@ int main(int argc, char* argv[])
   }
 
   babinov::CircleData data;
-  while (!std::cin.eof())
+  std::cout << std::setprecision(3) << std::fixed;
+  while (std::cin >> data)
   {
-    std::cin >> data;
-    if (std::cin.fail())
-    {
-      std::cerr << "Invalid values" << '\n';
-      return 1;
-    }
     auto start = std::chrono::steady_clock::now();
-    double square = calculateArea(data, seed, tries);
+    double area = calculateArea(data, seed, tries);
     auto end = std::chrono::steady_clock::now();
     double time = std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count();
-    std::cout << square << ' ' << time << '\n';
+    std::cout << time << ' ' << area << '\n';
+  }
+  if (!std::cin.eof())
+  {
+    std::cerr << "Invalid values" << '\n';
+    return 1;
   }
   return 0;
 }
