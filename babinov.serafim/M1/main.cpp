@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
       std::cerr << "Invalid values" << '\n';
       return 1;
     }
+    std::cout << babinov::getSquare(data, seed, tries) << '\n';
   }
   return 0;
 }

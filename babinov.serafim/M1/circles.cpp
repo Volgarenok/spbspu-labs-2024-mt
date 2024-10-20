@@ -24,7 +24,7 @@ size_t calculatePoints(size_t seed, size_t tries, size_t skips, size_t radius)
   return inTarget;
 }
 
-double getSquare(babinov::CircleData data, size_t seed, size_t tries)
+double babinov::getSquare(babinov::CircleData data, size_t seed, size_t tries)
 {
   std::vector< std::future< size_t > > futures;
   futures.reserve(data.nThreads - 1);
