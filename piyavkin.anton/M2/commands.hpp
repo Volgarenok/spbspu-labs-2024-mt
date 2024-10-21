@@ -1,18 +1,13 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
-#include <istream>
-#include <map>
-#include <ostream>
-#include <string>
-#include <stdexcept>
-#include <tuple>
-#include <utility>
 #include "set.hpp"
 
 namespace piyavkin
 {
-  void inputOb(std::istream& in, const std::string& name, std::map< std::string, Circle >& mp);
-  void inputOb(std::istream& in, const std::string& name, std::map< std::string, Set >& sets, const std::map< std::string, Circle >& c);
+  using circle_t = std::map< std::string, Circle >;
+  using set_t = std::map< std::string, Set >;
+  void inputOb(std::istream& in, const std::string& name, circle_t& mp);
+  void inputOb(std::istream& in, const std::string& name, set_t& sets, const circle_t& c);
   template< class T, class... Args >
   void input(std::istream& in, Args&&... args)
   {

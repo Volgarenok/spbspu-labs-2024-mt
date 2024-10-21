@@ -1,8 +1,6 @@
 #include "commands.hpp"
-#include "circle.hpp"
-#include "set.hpp"
 
-void piyavkin::inputOb(std::istream& in, const std::string& name, std::map< std::string, Circle >& mp)
+void piyavkin::inputOb(std::istream& in, const std::string& name, circle_t& mp)
 {
   Circle res;
   in >> res;
@@ -13,7 +11,7 @@ void piyavkin::inputOb(std::istream& in, const std::string& name, std::map< std:
   mp[name] = res;
 }
 
-void piyavkin::inputOb(std::istream& in, const std::string& nameSet, std::map< std::string, Set >& sets, const std::map< std::string, Circle >& c)
+void piyavkin::inputOb(std::istream& in, const std::string& nameSet, set_t& sets, const circle_t& c)
 {
   size_t n = 0;
   in >> n;
