@@ -11,10 +11,10 @@ int main()
   std::map< std::string, Circle > circles;
   std::map< std::string, Set > sets;
   std::map< std::string, std::function< void(std::istream&) > > cmd;
-  cmd["circle"] = std::bind(input< Circle >, std::placeholders::_1, std::ref(circles));
+  cmd["circle"] = std::bind(input< Circle, std::map< std::string, Circle >& >, std::placeholders::_1, std::ref(circles));
   cmd["show"] = std::bind(output< Circle >, std::placeholders::_1, std::ref(std::cout), std::cref(circles));
   cmd["frame"] = std::bind(outputFrame< Circle >, std::placeholders::_1, std::ref(std::cout), std::cref(circles));
-  cmd["set"] = std::bind(input< Set >, std::placeholders::_1, std::ref(sets), std::cref(circles));
+  cmd["set"] = std::bind(input< Set, std::map< std::string, Set >&, const std::map< std::string, Circle >& >, std::placeholders::_1, std::ref(sets), std::cref(circles));
   cmd["showset"] = std::bind(output< Set >, std::placeholders::_1, std::ref(std::cout), std::cref(sets));
   cmd["frameset"] = std::bind(outputFrame< Set >, std::placeholders::_1, std::ref(std::cout), std::cref(sets));
   std::string name;
