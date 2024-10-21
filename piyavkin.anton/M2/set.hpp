@@ -1,6 +1,6 @@
 #ifndef SET_HPP
 #define SET_HPP
-#include <vector>
+#include <map>
 #include "circle.hpp"
 
 namespace piyavkin
@@ -8,9 +8,13 @@ namespace piyavkin
   class Set
   {
   public:
-    void insert(const Circle& c);
+    void insert(const std::string& name, const Circle& c);
+    rectangle_t getFrame() const;
   private:
-    std::vector< Circle > set_;
+    std::map< std::string, Circle > set_;
+    rectangle_t rectangle_;
+    friend std::ostream& operator<<(std::ostream& out, const Set& s);
   };
+  std::ostream& operator<<(std::ostream& out, const Set& s);
 }
 #endif
