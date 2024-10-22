@@ -5,8 +5,8 @@
 #include <random>
 #include <stdexcept>
 #include <string>
-#include <stream_guard.hpp>
 #include "compute_circle_area.hpp"
+#include "stream_guard.hpp"
 
 size_t getNonNegativeNumber(const char* arg)
 {
