@@ -12,7 +12,7 @@ endif
 # The variable SILENT controls additional messages
 
 CPPFLAGS += -Wall -Wextra -Werror -Wno-missing-field-initializers -Werror=vla -Wold-style-cast $(if $(BOOST_LOCATION),-isystem $(BOOST_LOCATION))
-CXXFLAGS += -g -lpthreads
+CXXFLAGS += -g -lpthread
 
 system   := $(shell uname)
 
