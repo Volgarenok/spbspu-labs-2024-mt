@@ -43,7 +43,7 @@ int main(int argc, char ** argv)
     return 2;
   }
 
-  double circleArea = redko::calculateCircleArea(radius, tries);
+  double circleArea = redko::calculateCircleArea(radius, tries, seed);
   std::cout << circleArea << '\n';
 
   return 0;
