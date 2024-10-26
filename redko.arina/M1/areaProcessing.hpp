@@ -10,6 +10,7 @@ namespace redko
   using size_it = std::vector< size_t >::iterator;
 
   bool isPointInCircle(point_t p, double radius);
+  void fillWithRandomPoints(double radius, size_t tries, int seed, std::vector< point_t > & dest);
   void countPointsInCircle(double radius, point_it begin, size_t numOfPoints, size_it dest);
   double calculateCircleArea(double radius, size_t numOfThreads, size_t tries, int seed);
 }

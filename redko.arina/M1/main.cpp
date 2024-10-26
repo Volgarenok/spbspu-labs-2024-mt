@@ -11,12 +11,12 @@ int main(int argc, char ** argv)
   {
     if (argc == 2)
     {
-      tries = std::stoi(argv[1]);
+      tries = std::stoll(argv[1]);
     }
     else if (argc == 3)
     {
-      tries = std::stoi(argv[1]);
-      seed = std::stoi(argv[2]);
+      tries = std::stoll(argv[1]);
+      seed = std::stoll(argv[2]);
     }
     else
     {
@@ -24,7 +24,7 @@ int main(int argc, char ** argv)
       return 1;
     }
   }
-  catch (const std::invalid_argument &)
+  catch (const std::exception &)
   {
     std::cerr << "invalid command parameters\n";
     return 1;
