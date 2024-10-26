@@ -34,16 +34,16 @@ int main(int argc, char ** argv)
     return 2;
   }
 
-  int numOfTreads = 0;
+  int numOfThreads = 0;
   int radius = 0;
-  std::cin >> radius >> numOfTreads;
-  if (radius <= 0 || numOfTreads <= 0)
+  std::cin >> radius >> numOfThreads;
+  if (radius <= 0 || numOfThreads <= 0)
   {
     std::cerr << "wrong input parameters\n";
     return 2;
   }
 
-  double circleArea = redko::calculateCircleArea(radius, tries, seed);
+  double circleArea = redko::calculateCircleArea(radius, numOfThreads, tries, seed);
   std::cout << circleArea << '\n';
 
   return 0;
