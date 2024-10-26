@@ -16,10 +16,10 @@ int main(int argc, char* argv[])
   size_t seed = 0;
   try
   {
-    iterations = std::stoll(argv[1]);
+    iterations = std::stoull(argv[1]);
     if (argc == 3)
     {
-      seed = std::stoll(argv[2]);
+      seed = std::stoull(argv[2]);
     }
   }
   catch (const std::exception& e)
