@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include "calculate_square.hpp"
+#include "stream_guard.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -31,6 +32,7 @@ int main(int argc, char * argv[])
       return 1;
     }
     std::default_random_engine gen(seed);
+    StreamGuard guard(std::cout);
     std::cout << std::setprecision(3) << std::fixed;
     int radius = 0;
     int threadsCount = 0;
