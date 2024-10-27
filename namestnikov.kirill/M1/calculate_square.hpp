@@ -11,4 +11,4 @@ namespace namestnikov
   double getSquare(std::default_random_engine & gen, size_t numberOfTests, int radius, size_t threadsCount);
 }
 
-#endif 
+#endif

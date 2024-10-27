@@ -59,5 +59,5 @@ double namestnikov::getSquare(std::default_random_engine & gen, size_t numberOfT
     return ft.get();
    });
    size_t res = std::accumulate(results.begin(), results.end(), 0);
-   return 4 * std::pow(radius, 2) * res / numberOfTests; 
+   return 4 * std::pow(radius, 2) * res / numberOfTests;
 }
