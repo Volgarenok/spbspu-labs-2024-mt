@@ -1,51 +1,61 @@
-#include <cmath>
-#include <random>
-#include <thread>
-#include <vector>
 #include <iostream>
-#include <future>
-#include <algorithm>
+#include <iomanip>
+#include <string>
 #include <chrono>
-#include <functional>
 #include "calculate_square.hpp"
 
-double getSquareLin(std::default_random_engine & gen, size_t numberOfTests, int radius)
+int main(int argc, char * argv[])
 {
   using namespace namestnikov;
-  std::uniform_real_distribution< double > distribution(-radius, radius);
-  int res = 0;
-  for (size_t i = 0; i < numberOfTests; ++i)
+  int numberOfTests = 0;
+  int seed = 0;
+  try
   {
-    double x = distribution(gen);
-    double y = distribution(gen);
-    //std::cout << x << " " << y;
-    Point point(x, y);
-    if (std::pow(point.getX(), 2) + std::pow(point.getY(), 2) <= std::pow(radius, 2))
+    if (argc == 3)
     {
-      ++res;
+      numberOfTests = std::stoi(argv[1]);
+      seed = std::stoi(argv[2]);
+    }
+    else if (argc == 2)
+    {
+      numberOfTests = std::stoi(argv[1]);
+    }
+    else
+    {
+      std::cerr << "Wrong command line arguments\n";
+      return 1;
+    }
+    if ((numberOfTests < 0) || (seed < 0))
+    {
+      std::cerr << "Command line arguments must not be less than zero\n";
+      return 1;
+    }
+    std::default_random_engine gen(seed);
+    std::cout << std::setprecision(3) << std::fixed;
+    int radius = 0;
+    int threadsCount = 0;
+    while (std::cin >> radius >> threadsCount)
+    {
+      if ((radius < 0) || (threadsCount < 0))
+      {
+        std::cerr << "Arguments must not be less than zero\n";
+        return 1;
+      }
+      auto begin = std::chrono::high_resolution_clock::now();
+      double square = getSquare(gen, numberOfTests, radius, threadsCount);
+      auto end = std::chrono::high_resolution_clock::now();
+      auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count();
+      std::cout << static_cast< double >(time) << " " << square << "\n";
+    }
+    if (!std::cin.eof())
+    {
+      std::cerr << "Wrong input\n";
+      return 1;
     }
   }
-  return 4 * std::pow(radius, 2) * res / numberOfTests;
-}
-
-int main()
-{
-  using namespace namestnikov;
-  size_t seed = 5;
-  int radius = 2;
-  size_t numberOfTests = 100000000;
-  size_t res = 0;
-  size_t threadsCount = 6;
-  std::default_random_engine gen(seed);
-  auto begin = std::chrono::high_resolution_clock::now();
-  double square = getSquare(gen, numberOfTests, radius, threadsCount);
-  auto end = std::chrono::high_resolution_clock::now();
-  auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - begin).count();
-  std::cout << static_cast< double >(time) << "\n";
-  auto begin1 = std::chrono::high_resolution_clock::now();
-  double square1 = getSquareLin(gen, numberOfTests, radius);
-  auto end1 = std::chrono::high_resolution_clock::now();
-  auto time1 = std::chrono::duration_cast< std::chrono::milliseconds >(end1 - begin1).count();
-  std::cout << static_cast< double >(time1) << "\n";
-  return 0;
+  catch (const std::exception & e)
+  {
+    std::cerr << e.what() << "\n";
+    return 1;
+  }
 }
