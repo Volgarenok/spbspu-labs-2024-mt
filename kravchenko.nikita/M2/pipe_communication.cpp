@@ -1,5 +1,4 @@
 #include "pipe_communication.hpp"
-#include "commands.hpp"
 
 template <>
 void kravchenko::pipePush< kravchenko::CircleData >(int fdsWrite, const CircleData& data)

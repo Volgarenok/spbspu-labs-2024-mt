@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "commands.hpp"
 #include "pipe_communication.hpp"
+#include "pipe_guard.hpp"
 
 int main()
 {
@@ -21,38 +22,28 @@ int main()
     std::cerr << "Process fork error: " << strerror(errno) << '\n';
     return 1;
   }
-  if (cpid == 0) // Compute (child)
+  using namespace kravchenko;
+  if (cpid == 0)
   {
-    close(fdsToCompute[1]);
-    close(fdsToUser[0]);
-    fdsToCompute[1] = -1;
-    fdsToUser[0] = -1;
+    PipeGuard< true > userGuard(fdsToUser);
+    PipeGuard< false > computeGuard(fdsToCompute);
 
-    using namespace kravchenko;
     Circle test;
     pipePop(fdsToCompute[0], test);
     std::cout << "Circle from user:\n";
     std::cout << test << '\n';
 
-    close(fdsToCompute[0]);
-    close(fdsToUser[1]);
     std::cout << "Compute closed\n";
   }
-  else // User (parent)
+  else
   {
-    close(fdsToCompute[0]);
-    close(fdsToUser[1]);
-    fdsToCompute[0] = -1;
-    fdsToUser[1] = -1;
+    PipeGuard< false > userGuard(fdsToUser);
+    PipeGuard< true > computeGuard(fdsToCompute);
 
-    using namespace kravchenko;
     Circle test;
     std::cout << "Enter circle:\n";
     std::cin >> test;
     pipePush(fdsToCompute[1], test);
-
-    close(fdsToCompute[1]);
-    close(fdsToUser[0]);
 
     if (waitpid(cpid, nullptr, 0) != cpid)
     {
