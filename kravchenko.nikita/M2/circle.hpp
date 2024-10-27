@@ -10,7 +10,6 @@ namespace kravchenko
     int x;
     int y;
   };
-  std::istream& operator>>(std::istream& in, Point& p);
   std::ostream& operator<<(std::ostream& out, const Point& p);
 
   class Circle
@@ -18,8 +17,8 @@ namespace kravchenko
   public:
     Circle();
     Circle(int radius, int x, int y);
-    int getRadius();
-    const Point& getCenter();
+    int getRadius() const;
+    const Point& getCenter() const;
 
   private:
     int radius_;
