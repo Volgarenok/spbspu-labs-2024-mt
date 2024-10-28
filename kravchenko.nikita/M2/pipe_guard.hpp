@@ -10,7 +10,11 @@ namespace kravchenko
   {
   public:
     PipeGuard(int fds[2]);
+    PipeGuard(const PipeGuard&) = delete;
+    PipeGuard(PipeGuard&&) = delete;
     ~PipeGuard();
+    PipeGuard& operator=(const PipeGuard&) = delete;
+    PipeGuard& operator=(PipeGuard&&) = delete;
 
   private:
     int fdsOnClose_;

@@ -1,9 +1,14 @@
 #include <cstring>
+#include <functional>
 #include <iostream>
 #include <limits>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <sys/wait.h>
 #include <unistd.h>
 #include "commands.hpp"
+#include "compute_handler.hpp"
 #include "pipe_communication.hpp"
 #include "pipe_guard.hpp"
 
@@ -28,29 +33,70 @@ int main()
     PipeGuard< true > userGuard(fdsToUser);
     PipeGuard< false > computeGuard(fdsToCompute);
 
-    Circle test;
-    pipePop(fdsToCompute[0], test);
-    std::cout << "Circle from user:\n";
-    std::cout << test << '\n';
-
-    std::cout << "Compute closed\n";
+    CalcMap computeCalcs;
+    QueryType currentQuery;
+    pipePop(fdsToCompute[0], currentQuery);
+    while (currentQuery != QueryType::QUIT)
+    {
+      switch (currentQuery)
+      {
+      case QueryType::AREA:
+        handleArea(fdsToCompute[0], computeCalcs);
+        break;
+      default:
+        std::cerr << "<INVALID QUERY>\n";
+        return 1;
+      }
+      pipePop(fdsToCompute[0], currentQuery);
+    }
   }
   else
   {
     PipeGuard< false > userGuard(fdsToUser);
     PipeGuard< true > computeGuard(fdsToCompute);
 
-    Circle test;
-    std::cout << "Enter circle:\n";
-    std::cin >> test;
-    pipePush(fdsToCompute[1], test);
+    CircleSetMap sets;
+    CalcMap userCalcs;
+    std::unordered_map< std::string, std::function< void(std::istream&, std::ostream&) > > cmds;
+    {
+      using namespace std::placeholders;
+      cmds["area"] = std::bind(cmdArea, fdsToCompute[1], std::cref(sets), std::ref(userCalcs), _1, _2);
+      // cmds["status"] = std::bind(cmdStatus, std::ref(userCalcs), _1, _2);
+      // cmds["wait"] = std::bind(cmdWait, std::ref(userCalcs), _1, _2);
+    }
+
+    sets["test_set"] = { Circle(), Circle(2, -3, 4), Circle(3, 5, 6) };
+
+    std::string cmd;
+    while (std::cin >> cmd)
+    {
+      try
+      {
+        cmds.at(cmd)(std::cin, std::cout);
+      }
+      catch (const std::out_of_range& e)
+      {
+        std::cout << "<INVALID COMMAND>\n";
+      }
+      catch (const std::invalid_argument& e)
+      {
+        std::cout << e.what() << '\n';
+      }
+      catch (const std::exception& e)
+      {
+        std::cout << e.what() << '\n';
+        break;
+      }
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    }
+    pipePush(fdsToCompute[1], QueryType::QUIT);
 
     if (waitpid(cpid, nullptr, 0) != cpid)
     {
       std::cerr << "Process wait failed: " << strerror(errno) << '\n';
       return 1;
     }
-    std::cout << "User closed\n";
   }
   return 0;
 }
