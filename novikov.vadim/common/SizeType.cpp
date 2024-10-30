@@ -18,17 +18,11 @@ std::istream& novikov::operator>>(std::istream& in, SizeType& value)
   std::string temp;
   in >> temp;
 
-  if (!containsOnlyNumbers(temp))
-  {
-    in.setstate(std::ios::failbit);
-    return in;
-  }
-
   size_t size = 0;
 
   try
   {
-    size = std::stoul(temp);
+    size = parseSizeType(temp);
   }
   catch (const std::invalid_argument&)
   {

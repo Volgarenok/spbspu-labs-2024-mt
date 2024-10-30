@@ -1,7 +1,8 @@
 #include "StringParseFunctions.hpp"
 #include <cctype>
+#include <stdexcept>
 
-bool novikov::containsOnlyNumbers(const std::string& str)
+bool novikov::isSizeType(const std::string& str)
 {
   for (auto&& i : str)
   {
@@ -12,4 +13,14 @@ bool novikov::containsOnlyNumbers(const std::string& str)
   }
 
   return true;
+}
+
+size_t novikov::parseSizeType(const std::string& str)
+{
+  if (!isSizeType(str))
+  {
+    throw std::invalid_argument("Некорректные параметры!");
+  }
+
+  return std::stoul(str);
 }
