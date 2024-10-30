@@ -51,3 +51,4 @@ double nikitov::calculateSquare(size_t radius, size_t numberOfThreads, size_t se
 
   return 4.0 * std::pow(radius, 2) * std::accumulate(counts.cbegin(), counts.cend(), 0) / tries;
 }
+

@@ -8,3 +8,4 @@ namespace nikitov
   double calculateSquare(size_t radius, size_t numberOfThreads, size_t seed, size_t tries);
 }
 #endif
+
