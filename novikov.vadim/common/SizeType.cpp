@@ -1,29 +1,10 @@
-#include <SizeType.hpp>
-#include <cctype>
+#include "SizeType.hpp"
 #include <istream>
 #include <algorithm>
 #include <numeric>
 #include <vector>
 #include <string>
-
-namespace novikov
-{
-  namespace detail
-  {
-    bool containsOnlyNumbers(const std::string& str)
-    { 
-      for (auto&& i : str)
-      {
-        if (!std::isdigit(i))
-	{
-	  return false;
-	}
-      }
-
-      return true;
-    }
-  }
-}
+#include "StringParseFunctions.hpp"
 
 std::istream& novikov::operator>>(std::istream& in, SizeType& value)
 {
@@ -37,7 +18,7 @@ std::istream& novikov::operator>>(std::istream& in, SizeType& value)
   std::string temp;
   in >> temp;
 
-  if (!detail::containsOnlyNumbers(temp))
+  if (!containsOnlyNumbers(temp))
   {
     in.setstate(std::ios::failbit);
     return in;
