@@ -7,27 +7,33 @@
 
 int main(int argc, char* argv[])
 {
-  int inputTries = 0;
-  int inputSeed = 0;
+  size_t seed = 0;
+  size_t tries = 0;
   try
   {
-    if (argc == 2)
+    if (argc != 2 && argc != 3)
     {
-      inputTries = std::stoi(argv[1]);
+      throw std::logic_error("Wrong input parameters");
     }
-    else if (argc == 3)
+    
+    if (argv[1][0] == '-')
     {
-      inputTries = std::stoi(argv[1]);
-      inputSeed = std::stoi(argv[2]);
+      throw std::logic_error("The number of tries is negative");
     }
-    else
+    tries = std::stoi(argv[1]);
+
+    if (argc == 3)
     {
-      throw std::logic_error("Wrong number of agruments");
+      if (argv[2][0] == '-')
+      {
+        throw std::logic_error("Seed is negative");
+      }
+      seed = std::stoi(argv[2]);
     }
 
-    if (inputTries <= 0 || inputSeed < 0)
+    if (tries == 0)
     {
-      throw std::logic_error("Wrong seed or tries");
+      throw std::logic_error("The number of tries is 0");
     }
   }
   catch (const std::exception& e)
@@ -35,9 +41,6 @@ int main(int argc, char* argv[])
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
   }
-
-  size_t seed = inputSeed;
-  size_t tries = inputTries;
 
   using namespace nikitov;
   ScopeGuard scopeGuard(std::cout);
