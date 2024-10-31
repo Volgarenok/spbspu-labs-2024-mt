@@ -47,9 +47,24 @@ void kravchenko::cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istre
     {
       throw std::invalid_argument("<CIRCLE " + circleName + " NOT FOUND>");
     }
-    data.push_back(*foundIt);
+    data.push_back((*foundIt).second);
   }
   sets[setName] = data;
+}
+
+void kravchenko::cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out)
+{
+  std::string name;
+  if (!(in >> name))
+  {
+    throw std::invalid_argument("<INVALID INPUT>");
+  }
+  auto foundIt = circles.find(name);
+  if (foundIt == circles.end())
+  {
+    throw std::invalid_argument("<CIRCLE " + name + " NOT FOUND>");
+  }
+  out << (*foundIt).second << '\n';
 }
 
 void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
