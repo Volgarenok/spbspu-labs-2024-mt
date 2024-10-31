@@ -26,6 +26,11 @@ const kravchenko::Point& kravchenko::Circle::getCenter() const
   return center_;
 }
 
+kravchenko::Frame kravchenko::Circle::getFrame() const
+{
+  return { { center_.x - radius_, center_.y - radius_ }, { center_.x + radius_, center_.y + radius_ } };
+}
+
 std::ostream& kravchenko::operator<<(std::ostream& out, const Point& p)
 {
   std::ostream::sentry sentry(out);
@@ -36,6 +41,16 @@ std::ostream& kravchenko::operator<<(std::ostream& out, const Point& p)
   out << '(' << p.x;
   out << ' ' << p.y << ')';
   return out;
+}
+
+std::ostream& kravchenko::operator<<(std::ostream& out, const Frame& f)
+{
+  std::ostream::sentry sentry(out);
+  if (!sentry)
+  {
+    return out;
+  }
+  return out << f.p1 << ' ' << f.p2;
 }
 
 std::istream& kravchenko::operator>>(std::istream& in, Circle& c)

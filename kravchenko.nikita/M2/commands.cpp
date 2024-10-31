@@ -1,5 +1,7 @@
 #include "commands.hpp"
+#include <algorithm>
 #include <exception>
+#include <iterator>
 #include "compute_handler.hpp"
 #include "pipe_communication.hpp"
 
@@ -40,32 +42,25 @@ void kravchenko::cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istre
   data.reserve(size);
   for (size_t i = 0; i < size; ++i)
   {
-    std::string circleName;
-    if (!(in >> circleName))
-    {
-      throw std::invalid_argument("<INVALID INPUT>");
-    }
-    auto foundIt = circles.find(circleName);
-    if (foundIt == circles.end())
-    {
-      throw std::invalid_argument("<CIRCLE " + circleName + " NOT FOUND>");
-    }
-    data.push_back((*foundIt).second);
+    data.push_back((*cmd::findElement(circles, in)).second);
   }
   sets[setName] = data;
 }
 
 void kravchenko::cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out)
 {
-  out << (*helpers::findToShow(circles, in)).second << '\n';
+  out << (*cmd::findElement(circles, in)).second << '\n';
 }
 
 void kravchenko::cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
 {
-  for (const Circle& circle : (*helpers::findToShow(sets, in)).second)
-  {
-    out << circle << '\n';
-  }
+  const CircleWrappedData& set = (*cmd::findElement(sets, in)).second;
+  std::copy(set.cbegin(), set.cend(), std::ostream_iterator< Circle >{ out, "\n" });
+}
+
+void kravchenko::cmdFrame(const CircleMap& circles, std::istream& in, std::ostream& out)
+{
+  out << (*cmd::findElement(circles, in)).second.getFrame() << '\n';
 }
 
 void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)

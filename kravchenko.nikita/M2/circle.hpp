@@ -2,6 +2,7 @@
 #define CIRCLE_HPP
 
 #include <iostream>
+#include <utility>
 
 namespace kravchenko
 {
@@ -12,6 +13,13 @@ namespace kravchenko
   };
   std::ostream& operator<<(std::ostream& out, const Point& p);
 
+  struct Frame
+  {
+    Point p1;
+    Point p2;
+  };
+  std::ostream& operator<<(std::ostream& out, const Frame& f);
+
   class Circle
   {
   public:
@@ -19,6 +27,7 @@ namespace kravchenko
     Circle(int radius, int x, int y);
     int getRadius() const;
     const Point& getCenter() const;
+    Frame getFrame() const;
 
   private:
     int radius_;

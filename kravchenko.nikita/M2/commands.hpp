@@ -22,20 +22,21 @@ namespace kravchenko
   void cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istream& in, std::ostream&);
   void cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out);
   void cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
+  void cmdFrame(const CircleMap& circles, std::istream& in, std::ostream& out);
 
   void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
   void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
   void cmdWait(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
 
-  namespace helpers
+  namespace cmd
   {
     template < class Map >
-    typename Map::const_iterator findToShow(const Map& map, std::istream& in);
+    typename Map::const_iterator findElement(const Map& map, std::istream& in);
   }
 }
 
 template < class Map >
-typename Map::const_iterator kravchenko::helpers::findToShow(const Map& map, std::istream& in)
+typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::istream& in)
 {
   std::string name;
   if (!(in >> name))
