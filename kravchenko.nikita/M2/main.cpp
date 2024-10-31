@@ -62,13 +62,12 @@ int main()
     {
       using namespace std::placeholders;
       cmds["circle"] = std::bind(cmdCircle, std::ref(circles), _1, _2);
+      cmds["set"] = std::bind(cmdSet, std::ref(sets), std::cref(circles), _1, _2);
 
       cmds["area"] = std::bind(cmdArea, fdsToCompute[1], std::cref(sets), std::ref(userCalcs), _1, _2);
       // cmds["status"] = std::bind(cmdStatus, std::ref(userCalcs), _1, _2);
       // cmds["wait"] = std::bind(cmdWait, std::ref(userCalcs), _1, _2);
     }
-
-    sets["test_set"] = { Circle(), Circle(2, -3, 4), Circle(3, 5, 6) };
 
     std::string cmd;
     while (std::cin >> cmd)

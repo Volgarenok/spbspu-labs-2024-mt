@@ -4,7 +4,7 @@
 void kravchenko::handleArea(int fdsFromUser, CalcMap& calcs)
 {
   std::string calcName;
-  CircleData data;
+  CircleWrappedData data;
   size_t threads = 0;
   size_t tries = 0;
   pipePop(fdsFromUser, calcName);

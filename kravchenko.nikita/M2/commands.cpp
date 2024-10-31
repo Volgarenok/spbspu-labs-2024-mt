@@ -19,6 +19,39 @@ void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
   circles[name] = c;
 }
 
+void kravchenko::cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istream& in, std::ostream&)
+{
+  std::string setName;
+  size_t size = 0;
+  in >> setName >> size;
+  if (!in)
+  {
+    throw std::invalid_argument("<INVALID INPUT>");
+  }
+  if (sets.find(setName) != sets.end())
+  {
+    throw std::invalid_argument("<SET ALREADY EXISTS>");
+  }
+  if (size < 1)
+  {
+    throw std::invalid_argument("<INVALID SIZE>");
+  }
+  CircleWrappedData data;
+  data.reserve(size);
+  for (size_t i = 0; i < size; ++i)
+  {
+    std::string circleName;
+    in >> circleName;
+    auto foundIt = circles.find(circleName);
+    if (foundIt == circles.end())
+    {
+      throw std::invalid_argument("<CIRCLE " + circleName + " NOT FOUND>");
+    }
+    data.push_back(*foundIt);
+  }
+  sets[setName] = data;
+}
+
 void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
 {
   std::string calcName;
