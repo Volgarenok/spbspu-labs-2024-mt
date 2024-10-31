@@ -26,6 +26,28 @@ namespace kravchenko
   void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
   void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
   void cmdWait(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
+
+  namespace helpers
+  {
+    template < class Map >
+    typename Map::const_iterator findToShow(const Map& map, std::istream& in);
+  }
+}
+
+template < class Map >
+typename Map::const_iterator kravchenko::helpers::findToShow(const Map& map, std::istream& in)
+{
+  std::string name;
+  if (!(in >> name))
+  {
+    throw std::invalid_argument("<INVALID INPUT>");
+  }
+  typename Map::const_iterator foundIt = map.find(name);
+  if (foundIt == map.cend())
+  {
+    throw std::invalid_argument("<ELEMENT " + name + " NOT FOUND>");
+  }
+  return foundIt;
 }
 
 #endif

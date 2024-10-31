@@ -57,32 +57,12 @@ void kravchenko::cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istre
 
 void kravchenko::cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out)
 {
-  std::string name;
-  if (!(in >> name))
-  {
-    throw std::invalid_argument("<INVALID INPUT>");
-  }
-  auto foundIt = circles.find(name);
-  if (foundIt == circles.end())
-  {
-    throw std::invalid_argument("<CIRCLE " + name + " NOT FOUND>");
-  }
-  out << (*foundIt).second << '\n';
+  out << (*helpers::findToShow(circles, in)).second << '\n';
 }
 
 void kravchenko::cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
 {
-  std::string name;
-  if (!(in >> name))
-  {
-    throw std::invalid_argument("<INVALID INPUT>");
-  }
-  auto foundIt = sets.find(name);
-  if (foundIt == sets.end())
-  {
-    throw std::invalid_argument("<SET " + name + " NOT FOUND>");
-  }
-  for (auto&& circle : (*foundIt).second)
+  for (const Circle& circle : (*helpers::findToShow(sets, in)).second)
   {
     out << circle << '\n';
   }
