@@ -1,5 +1,4 @@
 #include "commands.hpp"
-#include <algorithm>
 #include <exception>
 #include <iterator>
 #include "compute_handler.hpp"
@@ -63,6 +62,12 @@ void kravchenko::cmdFrame(const CircleMap& circles, std::istream& in, std::ostre
   out << (*cmd::findElement(circles, in)).second.getFrame() << '\n';
 }
 
+void kravchenko::cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
+{
+  const CircleWrappedData& data = (*cmd::findElement(sets, in)).second;
+  out << cmd::getFrameSet(data.cbegin(), data.cend()) << '\n';
+}
+
 void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
 {
   std::string calcName;
@@ -89,4 +94,17 @@ void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& ca
   pipePush(fdsToCompute, threads);
   pipePush(fdsToCompute, tries);
   calcs[calcName] = { false, 0.0 };
+}
+
+kravchenko::cmd::FramePred::FramePred(const Circle& c):
+  frame(c.getFrame())
+{}
+
+void kravchenko::cmd::FramePred::operator()(const Circle& c)
+{
+  Frame compared = c.getFrame();
+  frame.leftBottom.x = std::min(frame.leftBottom.x, compared.leftBottom.x);
+  frame.leftBottom.y = std::min(frame.leftBottom.y, compared.leftBottom.y);
+  frame.rightTop.x = std::max(frame.rightTop.x, compared.rightTop.x);
+  frame.rightTop.y = std::max(frame.rightTop.y, compared.rightTop.y);
 }

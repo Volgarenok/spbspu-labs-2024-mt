@@ -15,8 +15,8 @@ namespace kravchenko
 
   struct Frame
   {
-    Point p1;
-    Point p2;
+    Point leftBottom;
+    Point rightTop;
   };
   std::ostream& operator<<(std::ostream& out, const Frame& f);
 

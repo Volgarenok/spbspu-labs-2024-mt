@@ -50,7 +50,7 @@ std::ostream& kravchenko::operator<<(std::ostream& out, const Frame& f)
   {
     return out;
   }
-  return out << f.p1 << ' ' << f.p2;
+  return out << f.leftBottom << ' ' << f.rightTop;
 }
 
 std::istream& kravchenko::operator>>(std::istream& in, Circle& c)

@@ -1,6 +1,7 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -23,6 +24,7 @@ namespace kravchenko
   void cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out);
   void cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
   void cmdFrame(const CircleMap& circles, std::istream& in, std::ostream& out);
+  void cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
 
   void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
   void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
@@ -32,6 +34,16 @@ namespace kravchenko
   {
     template < class Map >
     typename Map::const_iterator findElement(const Map& map, std::istream& in);
+
+    template < class CircleDataIt >
+    Frame getFrameSet(CircleDataIt begin, CircleDataIt end);
+
+    struct FramePred
+    {
+      FramePred(const Circle& c);
+      void operator()(const Circle& c);
+      Frame frame;
+    };
   }
 }
 
@@ -49,6 +61,14 @@ typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::i
     throw std::invalid_argument("<ELEMENT " + name + " NOT FOUND>");
   }
   return foundIt;
+}
+
+template < class CircleDataIt >
+kravchenko::Frame kravchenko::cmd::getFrameSet(CircleDataIt begin, CircleDataIt end)
+{
+  FramePred pred(*(begin++));
+  std::for_each(begin, end, std::ref(pred));
+  return pred.frame;
 }
 
 #endif

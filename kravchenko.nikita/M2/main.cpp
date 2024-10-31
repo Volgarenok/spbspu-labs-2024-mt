@@ -66,6 +66,7 @@ int main()
       cmds["show"] = std::bind(cmdShow, std::cref(circles), _1, _2);
       cmds["showset"] = std::bind(cmdShowSet, std::cref(sets), _1, _2);
       cmds["frame"] = std::bind(cmdFrame, std::cref(circles), _1, _2);
+      cmds["frameset"] = std::bind(cmdFrameSet, std::cref(sets), _1, _2);
 
       cmds["area"] = std::bind(cmdArea, fdsToCompute[1], std::cref(sets), std::ref(userCalcs), _1, _2);
       // cmds["status"] = std::bind(cmdStatus, std::ref(userCalcs), _1, _2);
