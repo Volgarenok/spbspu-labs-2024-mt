@@ -21,6 +21,7 @@ namespace kravchenko
   void cmdCircle(CircleMap& circles, std::istream& in, std::ostream&);
   void cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istream& in, std::ostream&);
   void cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out);
+  void cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
 
   void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
   void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
