@@ -3,6 +3,22 @@
 #include "compute_handler.hpp"
 #include "pipe_communication.hpp"
 
+void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
+{
+  std::string name;
+  Circle c;
+  in >> name >> c;
+  if (!in)
+  {
+    throw std::invalid_argument("<INVALID INPUT>");
+  }
+  if (circles.find(name) != circles.end())
+  {
+    throw std::invalid_argument("<CIRCLE ALREADY EXISTS>");
+  }
+  circles[name] = c;
+}
+
 void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
 {
   std::string calcName;

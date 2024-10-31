@@ -55,11 +55,14 @@ int main()
     PipeGuard< false > userGuard(fdsToUser);
     PipeGuard< true > computeGuard(fdsToCompute);
 
+    CircleMap circles;
     CircleSetMap sets;
     CalcMap userCalcs;
     std::unordered_map< std::string, std::function< void(std::istream&, std::ostream&) > > cmds;
     {
       using namespace std::placeholders;
+      cmds["circle"] = std::bind(cmdCircle, std::ref(circles), _1, _2);
+
       cmds["area"] = std::bind(cmdArea, fdsToCompute[1], std::cref(sets), std::ref(userCalcs), _1, _2);
       // cmds["status"] = std::bind(cmdStatus, std::ref(userCalcs), _1, _2);
       // cmds["wait"] = std::bind(cmdWait, std::ref(userCalcs), _1, _2);

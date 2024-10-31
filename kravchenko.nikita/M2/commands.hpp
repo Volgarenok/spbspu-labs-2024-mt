@@ -17,6 +17,8 @@ namespace kravchenko
   using Calc = std::pair< bool, double >;
   using CalcMap = std::unordered_map< std::string, Calc >;
 
+  void cmdCircle(CircleMap& circles, std::istream& in, std::ostream&);
+
   void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
   void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
   void cmdWait(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
