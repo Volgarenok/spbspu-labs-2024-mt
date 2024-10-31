@@ -3,8 +3,8 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
-#include "createpoints.hpp"
-#include "getsquare.hpp"
+#include <createpoints.hpp>
+#include <getsquare.hpp>
 #include "streamguard.hpp"
 
 size_t getPositiveNum(char* str)
