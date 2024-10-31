@@ -1,7 +1,7 @@
 #include "circle.hpp"
 
 piyavkin::Circle::Circle():
-  Circle({0,0}, 0)
+  Circle({0, 0}, 0)
 {}
 
 piyavkin::Circle::Circle(const point_t& c, double r):
