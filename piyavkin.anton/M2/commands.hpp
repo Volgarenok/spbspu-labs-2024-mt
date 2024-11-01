@@ -1,11 +1,13 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 #include "set.hpp"
+#include <map>
 
 namespace piyavkin
 {
   using circle_t = std::map< std::string, Circle >;
   using set_t = std::map< std::string, Set >;
+  using calc_t = std::map< std::string, double >;
   void inputOb(std::istream& in, const std::string& name, circle_t& mp);
   void inputOb(std::istream& in, const std::string& name, set_t& sets, const circle_t& c);
   template< class T, class... Args >
@@ -35,5 +37,6 @@ namespace piyavkin
     in >> name;
     out << mp.at(name).getFrame() << '\n';
   }
+  void calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket);
 }
 #endif

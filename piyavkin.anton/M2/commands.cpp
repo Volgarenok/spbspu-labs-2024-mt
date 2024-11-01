@@ -1,7 +1,11 @@
 #include "commands.hpp"
 #include <cstddef>
+#include <iostream>
 #include <stdexcept>
 #include <string.h>
+#include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 void piyavkin::inputOb(std::istream& in, const std::string& name, circle_t& mp)
 {
@@ -34,7 +38,7 @@ void piyavkin::inputOb(std::istream& in, const std::string& nameSet, set_t& sets
     in >> name;
     if (c.find(name) != c.end())
     {
-      res.insert(name, c.at(name));
+      res.insert(c.at(name));
     }
     else
     {
@@ -42,4 +46,26 @@ void piyavkin::inputOb(std::istream& in, const std::string& nameSet, set_t& sets
     }
   }
   sets[nameSet] = res;
+}
+
+void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket)
+{
+  std::string calcName;
+  std::string setName;
+  long long th = 0;
+  long long tries = 0;
+  in >> calcName >> setName >> th >> tries;
+  auto it = sets.find(setName);
+  if (!in || tries <= 0 || th <= 0 || it == sets.end())
+  {
+    throw std::logic_error("Incorrect parameters for area command");
+  }
+  std::string str = it->second.getStr();
+  const char* cstr = str.c_str();
+  int bytesSent = send(socket, cstr, strlen(cstr), MSG_NOSIGNAL);
+  if (bytesSent < 0)
+  {
+    throw std::logic_error("Error sending data\n");
+  }
+  calcs[calcName] = 0;
 }
