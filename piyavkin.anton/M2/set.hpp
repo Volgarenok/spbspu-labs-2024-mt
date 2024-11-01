@@ -1,5 +1,6 @@
 #ifndef SET_HPP
 #define SET_HPP
+#include <utility>
 #include <vector>
 #include "circle.hpp"
 
@@ -11,6 +12,7 @@ namespace piyavkin
     void insert(const Circle& c);
     rectangle_t getFrame() const;
     std::string getStr() const;
+    bool isInside(const std::pair< double, double >& p) const;
   private:
     std::vector< Circle > set_;
     rectangle_t rectangle_;

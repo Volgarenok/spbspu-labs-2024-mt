@@ -2,6 +2,7 @@
 #define CIRCLE_HPP
 #include <istream>
 #include <ostream>
+#include <utility>
 #include "base-types.hpp"
 
 namespace piyavkin
@@ -13,6 +14,7 @@ namespace piyavkin
     Circle(const point_t& c, double r);
     rectangle_t getFrame() const;
     std::string getStr() const;
+    bool isInside(const std::pair< double, double >& p) const;
   private:
     point_t center_;
     double radius_;

@@ -2,6 +2,7 @@
 #include "circle.hpp"
 #include <cstddef>
 #include <string>
+#include <utility>
 
 void piyavkin::Set::insert(const Circle &c)
 {
@@ -65,4 +66,16 @@ piyavkin::Set piyavkin::parse(const std::string& str)
     st.insert(circle);
   }
   return st;
+}
+
+bool piyavkin::Set::isInside(const std::pair< double, double >& p) const
+{
+  for (size_t i = 0; i < set_.size(); ++i)
+  {
+    if (set_[i].isInside(p))
+    {
+      return true;
+    }
+  }
+  return false;
 }
