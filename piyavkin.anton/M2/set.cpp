@@ -1,8 +1,11 @@
 #include "set.hpp"
+#include "circle.hpp"
+#include <cstddef>
+#include <string>
 
-void piyavkin::Set::insert(const std::string& name, const Circle &c)
+void piyavkin::Set::insert(const Circle &c)
 {
-  set_.insert({name, c});
+  set_.push_back( c);
   rectangle_.ll.x = std::min(c.getFrame().ll.x, rectangle_.ll.x);
   rectangle_.ll.y = std::min(c.getFrame().ll.y, rectangle_.ll.y);
   rectangle_.ur.x = std::max(c.getFrame().ur.x, rectangle_.ur.x);
@@ -21,9 +24,45 @@ std::ostream& piyavkin::operator<<(std::ostream& out, const Set& s)
   {
     return out;
   }
-  for (auto x: s.set_)
+  auto it = s.set_.cbegin();
+  for (; it != --s.set_.cend(); ++it)
   {
-    out << x.first << ' ' << x.second;
+    out << *it << '\n';
   }
+  out << *it;
   return out;
+}
+
+std::string piyavkin::Set::getStr() const
+{
+  std::string res;
+  res += std::to_string(set_.size()) + ' ';
+  for (size_t i = 0; i < set_.size(); ++i)
+  {
+    res += set_[i].getStr() + ' ';
+  }
+  return res;
+}
+
+piyavkin::Set piyavkin::parse(const std::string& str)
+{
+  size_t sp = str.find(' ');
+  std::string ns = str.substr(0, sp);
+  size_t n = stoull(ns);
+  Set st;
+  size_t curr = sp + 1;
+  std::vector< double > c(3, 0);
+  for (size_t i = 0 ; i < n; ++i)
+  {
+    for (size_t j = 0; j < 3; ++j)
+    {
+      sp = str.find(' ', curr);
+      ns = str.substr(curr, sp);
+      c[j] = std::stod(ns);
+      curr = sp + 1;
+    }
+    Circle circle({c[1], c[2]}, c[0]);
+    st.insert(circle);
+  }
+  return st;
 }
