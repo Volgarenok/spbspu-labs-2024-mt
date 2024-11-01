@@ -3,18 +3,10 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
-#include <createpoints.hpp>
-#include <getsquare.hpp>
-#include "streamguard.hpp"
-
-size_t getPositiveNum(char* str)
-{
-  if (str[0] == '-')
-  {
-    throw std::logic_error("Negative number in command line");
-  }
-  return std::stoull(str);
-}
+#include <streamguard.hpp>
+#include <getpositivenum.hpp>
+#include "createpoints.hpp"
+#include "getsquare.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -27,14 +19,14 @@ int main(int argc, char* argv[])
   size_t seed = 0;
   try
   {
-    tries = getPositiveNum(argv[1]);
+    tries = piyavkin::getPositiveNum(argv[1]);
     if (tries == 0)
     {
       throw std::logic_error("The number of tests equil 0");
     }
     if (argc == 3)
     {
-      seed = getPositiveNum(argv[2]);
+      seed = piyavkin::getPositiveNum(argv[2]);
     }
   }
   catch (const std::exception& e)
