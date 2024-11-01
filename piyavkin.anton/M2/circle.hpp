@@ -12,6 +12,7 @@ namespace piyavkin
     Circle();
     Circle(const point_t& c, double r);
     rectangle_t getFrame() const;
+    std::string getStr() const;
   private:
     point_t center_;
     double radius_;

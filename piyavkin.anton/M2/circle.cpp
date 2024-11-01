@@ -1,4 +1,5 @@
 #include "circle.hpp"
+#include <string>
 
 piyavkin::Circle::Circle():
   Circle({0, 0}, 0)
@@ -46,4 +47,9 @@ std::ostream& piyavkin::operator<<(std::ostream& out, const Circle& c)
   }
   out << c.radius_ << ' ' << c.center_; 
   return out;
+}
+
+std::string piyavkin::Circle::getStr() const
+{
+  return std::to_string(radius_) + ' ' + std::to_string(center_.x) + ' ' + std::to_string(center_.y);
 }

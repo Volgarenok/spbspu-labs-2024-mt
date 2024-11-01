@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <functional>
 #include "commands.hpp"
+#include "set.hpp"
 #include "unlinkfileguard.hpp"
 
 int main()
@@ -15,6 +16,7 @@ int main()
   const char* path = "piyavkin.anton/M2/1.socket";
   pid_t child_pid = fork();
   std::cout << child_pid << '\n';
+  using namespace piyavkin;
   if (child_pid < 0)
   {
     std::cerr << "Fork has failed\n";
@@ -31,13 +33,13 @@ int main()
     struct sockaddr_un addr = {0};
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
-    piyavkin::UnlinkFileGuard fg(listening, addr.sun_path);
+    UnlinkFileGuard fg(listening, addr.sun_path);
     if (bind(listening, reinterpret_cast< const sockaddr* >(&addr), sizeof(addr)) < 0)
     {
       std::cerr << strerror(errno) << '\n';
       return 1;
     }
-    if (listen(listening, 1024) < 0)
+    if (listen(listening, 1000) < 0)
     {
       std::cerr << strerror(errno) << '\n';
       return 1;
@@ -48,18 +50,17 @@ int main()
       std::cerr << "Acceptance not completed\n";
       return 1;
     }
-    char buffer[1024] = {};
-    int sizeMsg = recv(sock, buffer, 1024, 0); //в последний попробовать MSG_WAITALL(Этот флаг просит подождать, пока не придет полное запрошенное количество данных)
-    if (sizeMsg < 0)
+    char buffer[1000] = {};
+    int sizeMsg = recv(sock, buffer, 1000, 0); 
+    if (sizeMsg <= 0)
     {
-      std::cerr << "гг";
+      std::cerr << "Invalid recv";
       return 1;
     }
-    std::cout << buffer << '\n';
+    Set st = parse(buffer);
   }
   else
   {
-    char buffer[] = "какашка";
     int sock{socket(AF_UNIX, SOCK_STREAM, 0)};
     if (!sock)
     {
@@ -69,7 +70,7 @@ int main()
     struct sockaddr_un addr = {0};
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
-    piyavkin::UnlinkFileGuard fg(sock, addr.sun_path);
+    UnlinkFileGuard fg(sock, addr.sun_path);
     sleep(1);
     if (connect(sock, reinterpret_cast< sockaddr* >(&addr), sizeof(addr)) < 0)
     {
@@ -77,16 +78,9 @@ int main()
       std::cerr << addr.sun_path << '\n';
       return 2;
     }
-    int bytes_sent = send(sock, buffer, strlen(buffer), MSG_NOSIGNAL);
-    if (bytes_sent < 0)
-    {
-      std::cerr << "Error sending data\n";
-      close(sock);
-      return 1;
-    }
-    using namespace piyavkin;
     circle_t circles;
     set_t sets;
+    calc_t calcs;
     std::map< std::string, std::function< void(std::istream&) > > cmd;
     {
       using namespace std::placeholders;
@@ -96,6 +90,7 @@ int main()
       cmd["set"] = std::bind(input< Set, set_t&, const circle_t& >, _1, std::ref(sets), std::cref(circles));
       cmd["showset"] = std::bind(output< Set >, _1, std::ref(std::cout), std::cref(sets));
       cmd["frameset"] = std::bind(outputFrame< Set >, _1, std::ref(std::cout), std::cref(sets));
+      cmd["area"] = std::bind(calcArea, _1, std::ref(sets), std::ref(calcs), sock);
     }
     std::string name;
     while (std::cin >> name)
