@@ -1,15 +1,15 @@
 #include "compute_handler.hpp"
-#include "pipe_communication.hpp"
 
-void kravchenko::handleArea(int fdsFromUser, CalcMap& calcs)
+void kravchenko::handleArea(PipeChannel& channel, CalcMap& calcs)
 {
   std::string calcName;
   CircleWrappedData data;
   size_t threads = 0;
   size_t tries = 0;
-  pipePop(fdsFromUser, calcName);
-  pipePop(fdsFromUser, data);
-  pipePop(fdsFromUser, threads);
-  pipePop(fdsFromUser, tries);
+  channel.pop(calcName); // TODO
+  channel.pop(data);     // TODO
+  channel.pop(threads);
+  channel.pop(tries);
+  // TODO
   calcs[calcName] = { false, 0.0 };
 }

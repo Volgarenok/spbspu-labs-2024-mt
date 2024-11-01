@@ -2,6 +2,7 @@
 #define COMPUTE_HANDLER_HPP
 
 #include "commands.hpp"
+#include "pipe_channel.hpp"
 
 namespace kravchenko
 {
@@ -11,7 +12,7 @@ namespace kravchenko
     AREA
   };
 
-  void handleArea(int fdsFromUser, CalcMap& calcs);
+  void handleArea(PipeChannel& channel, CalcMap& calcs);
 }
 
 #endif

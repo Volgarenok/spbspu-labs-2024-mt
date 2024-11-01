@@ -4,13 +4,11 @@
 #include <limits>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <sys/wait.h>
 #include <unistd.h>
 #include "commands.hpp"
 #include "compute_handler.hpp"
-#include "pipe_communication.hpp"
-#include "pipe_guard.hpp"
+#include "pipe_channel.hpp"
 
 int main()
 {
@@ -24,36 +22,38 @@ int main()
   pid_t cpid = fork();
   if (cpid == -1)
   {
+    close(fdsToCompute[0]);
+    close(fdsToCompute[1]);
+    close(fdsToUser[0]);
+    close(fdsToUser[1]);
     std::cerr << "Process fork error: " << strerror(errno) << '\n';
     return 1;
   }
   using namespace kravchenko;
   if (cpid == 0)
   {
-    PipeGuard< true > userGuard(fdsToUser);
-    PipeGuard< false > computeGuard(fdsToCompute);
+    PipeChannel channel(fdsToCompute, fdsToUser);
 
     CalcMap computeCalcs;
     QueryType currentQuery;
-    pipePop(fdsToCompute[0], currentQuery);
+    channel.pop(currentQuery);
     while (currentQuery != QueryType::QUIT)
     {
       switch (currentQuery)
       {
       case QueryType::AREA:
-        handleArea(fdsToCompute[0], computeCalcs);
+        handleArea(channel, computeCalcs);
         break;
       default:
         std::cerr << "<INVALID QUERY>\n";
         return 1;
       }
-      pipePop(fdsToCompute[0], currentQuery);
+      channel.pop(currentQuery);
     }
   }
   else
   {
-    PipeGuard< false > userGuard(fdsToUser);
-    PipeGuard< true > computeGuard(fdsToCompute);
+    PipeChannel channel(fdsToUser, fdsToCompute);
 
     CircleMap circles;
     CircleSetMap sets;
@@ -67,10 +67,6 @@ int main()
       cmds["showset"] = std::bind(cmdShowSet, std::cref(sets), _1, _2);
       cmds["frame"] = std::bind(cmdFrame, std::cref(circles), _1, _2);
       cmds["frameset"] = std::bind(cmdFrameSet, std::cref(sets), _1, _2);
-
-      cmds["area"] = std::bind(cmdArea, fdsToCompute[1], std::cref(sets), std::ref(userCalcs), _1, _2);
-      // cmds["status"] = std::bind(cmdStatus, std::ref(userCalcs), _1, _2);
-      // cmds["wait"] = std::bind(cmdWait, std::ref(userCalcs), _1, _2);
     }
 
     std::string cmd;
@@ -90,13 +86,13 @@ int main()
       }
       catch (const std::exception& e)
       {
-        std::cout << e.what() << '\n';
+        std::cerr << e.what() << '\n';
         break;
       }
       std::cin.clear();
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
-    pipePush(fdsToCompute[1], QueryType::QUIT);
+    channel.push(QueryType::QUIT);
 
     if (waitpid(cpid, nullptr, 0) != cpid)
     {

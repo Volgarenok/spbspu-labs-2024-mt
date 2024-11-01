@@ -2,7 +2,6 @@
 #include <exception>
 #include <iterator>
 #include "compute_handler.hpp"
-#include "pipe_communication.hpp"
 
 void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
 {
@@ -68,7 +67,7 @@ void kravchenko::cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::os
   out << cmd::getFrameSet(data.cbegin(), data.cend()) << '\n';
 }
 
-void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
+void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
 {
   std::string calcName;
   std::string setName;
@@ -88,11 +87,12 @@ void kravchenko::cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& ca
   {
     throw std::invalid_argument("<INVALID THREADS AND/OR TRIES>");
   }
-  pipePush(fdsToCompute, QueryType::AREA);
-  pipePush(fdsToCompute, calcName);
-  pipePush(fdsToCompute, (*sendSetIt).second);
-  pipePush(fdsToCompute, threads);
-  pipePush(fdsToCompute, tries);
+  channel.push(QueryType::AREA);
+  channel.push(calcName);            // TODO
+  channel.push((*sendSetIt).second); // TODO
+  channel.push(threads);
+  channel.push(tries);
+  // TODO
   calcs[calcName] = { false, 0.0 };
 }
 

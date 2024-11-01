@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include "circle.hpp"
+#include "pipe_channel.hpp"
 
 namespace kravchenko
 {
@@ -26,9 +27,7 @@ namespace kravchenko
   void cmdFrame(const CircleMap& circles, std::istream& in, std::ostream& out);
   void cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
 
-  void cmdArea(int fdsToCompute, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
-  void cmdStatus(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
-  void cmdWait(int fdsToCompute, CalcMap& calcs, std::istream& in, std::ostream& out);
+  void cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
 
   namespace cmd
   {
