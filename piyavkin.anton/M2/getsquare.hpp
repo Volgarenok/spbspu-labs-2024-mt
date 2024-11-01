@@ -1,8 +1,5 @@
 #ifndef GETSQUARE_HPP
 #define GETSQUARE_HPP
-#include <vector>
-#include <utility>
-#include "base-types.hpp"
 #include "set.hpp"
 
 namespace piyavkin

@@ -1,6 +1,5 @@
 #include "circle.hpp"
 #include <string>
-#include <utility>
 
 piyavkin::Circle::Circle():
   Circle({0, 0}, 0)

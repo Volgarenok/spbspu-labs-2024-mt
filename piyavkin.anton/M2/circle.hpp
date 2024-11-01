@@ -1,7 +1,6 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
 #include <istream>
-#include <ostream>
 #include <utility>
 #include "base-types.hpp"
 

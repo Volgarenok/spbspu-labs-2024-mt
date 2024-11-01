@@ -1,20 +1,12 @@
-#include <cerrno>
-#include <cstddef>
 #include <iostream>
-#include <limits>
-#include <random>
-#include <string.h>
-#include <string>
+#include <functional>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <functional>
 #include <getpositivenum.hpp>
-#include "base-types.hpp"
 #include "createpoints.hpp"
 #include "commands.hpp"
-#include "set.hpp"
 #include "getsquare.hpp"
 #include "unlinkfileguard.hpp"
 
@@ -53,12 +45,12 @@ int main(int argc, char* argv[])
     UnlinkFileGuard fg(listening, addr.sun_path);
     if (bind(listening, reinterpret_cast< const sockaddr* >(&addr), sizeof(addr)) < 0)
     {
-      std::cerr << strerror(errno) << '\n';
+      std::cerr << "Binding failed: " << strerror(errno) << '\n';
       return 1;
     }
     if (listen(listening, 1000) < 0)
     {
-      std::cerr << strerror(errno) << '\n';
+      std::cerr << "Listening failed: " << strerror(errno) << '\n';
       return 1;
     }
     int sock{accept(listening, nullptr, 0)};
@@ -73,7 +65,7 @@ int main(int argc, char* argv[])
       int sizeMsg = recv(sock, buffer, 1000, 0); 
       if (sizeMsg <= 0)
       {
-        std::cerr << "Invalid recv";
+        std::cerr << "Data not received\n";
         return 1;
       }
       std::string tn(buffer);
@@ -87,7 +79,6 @@ int main(int argc, char* argv[])
       rectangle_t r = st.getFrame();
       createPoints(gen, points, r, tries);
       double square = getSquare(points, st, r, th);
-      std::cout << square << '\n';
     }
   }
   else
@@ -106,7 +97,6 @@ int main(int argc, char* argv[])
     if (connect(sock, reinterpret_cast< sockaddr* >(&addr), sizeof(addr)) < 0)
     {
       std::cerr << "Connection failed: " << strerror(errno) << '\n';
-      std::cerr << addr.sun_path << '\n';
       return 2;
     }
     circle_t circles;

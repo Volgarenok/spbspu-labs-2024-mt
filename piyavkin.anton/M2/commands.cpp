@@ -1,9 +1,6 @@
 #include "commands.hpp"
-#include <cstddef>
-#include <iostream>
 #include <stdexcept>
-#include <string.h>
-#include <string>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -66,7 +63,7 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
   int bytesSent = send(socket, cstr, strlen(cstr), MSG_NOSIGNAL);
   if (bytesSent < 0)
   {
-    throw std::logic_error("Error sending data\n");
+    throw std::logic_error("Error sending data");
   }
   calcs[calcName] = 0;
 }
