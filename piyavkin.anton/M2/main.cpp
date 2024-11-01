@@ -1,18 +1,35 @@
 #include <cerrno>
+#include <cstddef>
 #include <iostream>
 #include <limits>
+#include <random>
 #include <string.h>
+#include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <functional>
+#include <getpositivenum.hpp>
+#include "base-types.hpp"
+#include "createpoints.hpp"
 #include "commands.hpp"
 #include "set.hpp"
+#include "getsquare.hpp"
 #include "unlinkfileguard.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc > 3 || argc < 1)
+  {
+    std::cerr << "Command line parameters entered incorrectly\n";
+    return 3;
+  }
+  size_t seed = 0;
+  if (argc == 2)
+  {
+    seed = piyavkin::getPositiveNum(argv[1]);
+  }
   const char* path = "piyavkin.anton/M2/1.socket";
   pid_t child_pid = fork();
   std::cout << child_pid << '\n';
@@ -51,13 +68,27 @@ int main()
       return 1;
     }
     char buffer[1000] = {};
-    int sizeMsg = recv(sock, buffer, 1000, 0); 
-    if (sizeMsg <= 0)
+    while (true)
     {
-      std::cerr << "Invalid recv";
-      return 1;
+      int sizeMsg = recv(sock, buffer, 1000, 0); 
+      if (sizeMsg <= 0)
+      {
+        std::cerr << "Invalid recv";
+        return 1;
+      }
+      std::string tn(buffer);
+      size_t curr = tn.find(' ');
+      size_t th = std::stoull(tn.substr(0, curr));
+      ++curr;
+      size_t tries = std::stoull(tn.substr(curr, tn.find(' ', curr)));
+      Set st = parse(tn.substr(tn.find(' ', curr) + 1));
+      data_t points;
+      std::minstd_rand gen(seed);
+      rectangle_t r = st.getFrame();
+      createPoints(gen, points, r, tries);
+      double square = getSquare(points, st, r, th);
+      std::cout << square << '\n';
     }
-    Set st = parse(buffer);
   }
   else
   {

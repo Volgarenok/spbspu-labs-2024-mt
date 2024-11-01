@@ -60,7 +60,8 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
   {
     throw std::logic_error("Incorrect parameters for area command");
   }
-  std::string str = it->second.getStr();
+  std::string str;
+  str += std::to_string(th) + ' ' + std::to_string(tries) + ' ' + it->second.getStr();
   const char* cstr = str.c_str();
   int bytesSent = send(socket, cstr, strlen(cstr), MSG_NOSIGNAL);
   if (bytesSent < 0)
