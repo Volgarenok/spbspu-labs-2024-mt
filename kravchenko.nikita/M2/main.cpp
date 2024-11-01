@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <limits>
+#include <random>
 #include <string>
 #include <unordered_map>
 #include <sys/wait.h>
@@ -34,7 +35,9 @@ int main()
   {
     PipeChannel channel(fdsToCompute, fdsToUser);
 
-    CalcMap computeCalcs;
+    GeneratorT generator;
+    ThreadMap tasks;
+    CalcMap calcs;
     QueryType currentQuery;
     channel.pop(currentQuery);
     while (currentQuery != QueryType::QUIT)
@@ -42,13 +45,17 @@ int main()
       switch (currentQuery)
       {
       case QueryType::AREA:
-        handleArea(channel, computeCalcs);
+        handleArea(channel, calcs, tasks, generator);
         break;
       default:
         std::cerr << "<INVALID QUERY>\n";
         return 1;
       }
       channel.pop(currentQuery);
+    }
+    for (auto& task : tasks)
+    {
+      task.second.join();
     }
   }
   else
@@ -57,7 +64,7 @@ int main()
 
     CircleMap circles;
     CircleSetMap sets;
-    CalcMap userCalcs;
+    CalcMap calcs;
     std::unordered_map< std::string, std::function< void(std::istream&, std::ostream&) > > cmds;
     {
       using namespace std::placeholders;
@@ -67,6 +74,8 @@ int main()
       cmds["showset"] = std::bind(cmdShowSet, std::cref(sets), _1, _2);
       cmds["frame"] = std::bind(cmdFrame, std::cref(circles), _1, _2);
       cmds["frameset"] = std::bind(cmdFrameSet, std::cref(sets), _1, _2);
+
+      cmds["area"] = std::bind(cmdArea, std::ref(channel), std::cref(sets), std::ref(calcs), _1, _2);
     }
 
     std::string cmd;

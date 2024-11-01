@@ -23,6 +23,12 @@ namespace kravchenko
     template < class T >
     void pop(T& obj);
 
+    template < class Container >
+    void pushContainer(const Container& data);
+
+    template < class Container >
+    void popContainer(Container& data);
+
   private:
     int fdsToRead_;
     int fdsToWrite_;
@@ -59,6 +65,32 @@ void kravchenko::PipeChannel::pop(T& obj)
     }
     bytes += ret;
   }
+}
+
+template < class Container >
+void kravchenko::PipeChannel::pushContainer(const Container& data)
+{
+  push(data.size());
+  for (const typename Container::value_type& element : data)
+  {
+    push(element);
+  }
+}
+
+template < class Container >
+void kravchenko::PipeChannel::popContainer(Container& data)
+{
+  size_t size = 0;
+  pop(size);
+  Container temp;
+  temp.reserve(size);
+  for (size_t i = 0; i < size; ++i)
+  {
+    typename Container::value_type element;
+    pop(element);
+    temp.push_back(element);
+  }
+  data = std::move(temp);
 }
 
 #endif

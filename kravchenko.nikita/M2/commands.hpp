@@ -17,8 +17,7 @@ namespace kravchenko
   using CircleWrappedData = std::vector< std::reference_wrapper< const Circle > >;
   using CircleSetMap = std::unordered_map< std::string, CircleWrappedData >;
 
-  using Calc = std::pair< bool, double >;
-  using CalcMap = std::unordered_map< std::string, Calc >;
+  using CalcMap = std::unordered_map< std::string, double >;
 
   void cmdCircle(CircleMap& circles, std::istream& in, std::ostream&);
   void cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istream& in, std::ostream&);
@@ -34,8 +33,8 @@ namespace kravchenko
     template < class Map >
     typename Map::const_iterator findElement(const Map& map, std::istream& in);
 
-    template < class CircleDataIt >
-    Frame getFrameSet(CircleDataIt begin, CircleDataIt end);
+    template < class CircleDataConstIt >
+    Frame getFrameSet(CircleDataConstIt begin, CircleDataConstIt end);
 
     struct FramePred
     {
@@ -62,11 +61,11 @@ typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::i
   return foundIt;
 }
 
-template < class CircleDataIt >
-kravchenko::Frame kravchenko::cmd::getFrameSet(CircleDataIt begin, CircleDataIt end)
+template < class CircleDataConstIt >
+kravchenko::Frame kravchenko::cmd::getFrameSet(CircleDataConstIt cbegin, CircleDataConstIt cend)
 {
-  FramePred pred(*(begin++));
-  std::for_each(begin, end, std::ref(pred));
+  FramePred pred(*(cbegin++));
+  std::for_each(cbegin, cend, std::ref(pred));
   return pred.frame;
 }
 
