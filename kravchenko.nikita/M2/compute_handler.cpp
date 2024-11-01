@@ -15,6 +15,22 @@ void kravchenko::handleArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tas
   tasks[calcName] = std::thread(startCalc, it, data, threads, tries, std::ref(gen));
 }
 
+void kravchenko::handleStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks)
+{
+  std::string calcName;
+  channel.popContainer(calcName);
+
+  bool isReady = (calcs[calcName] != 0.0);
+  channel.push(isReady);
+  if (isReady)
+  {
+    channel.push(calcs[calcName]);
+    calcs.erase(calcName);
+    tasks[calcName].join();
+    tasks.erase(calcName);
+  }
+}
+
 void kravchenko::startCalc(CalcMap::iterator calcIt, CircleData data, size_t threads, size_t tries, GeneratorT& gen)
 {
   try

@@ -38,18 +38,27 @@ int main()
     GeneratorT generator;
     ThreadMap tasks;
     CalcMap calcs;
+    std::unordered_map< QueryType, std::function< void() > > queries;
+    queries[QueryType::AREA] = std::bind(handleArea, std::ref(channel), std::ref(calcs), std::ref(tasks), std::ref(generator));
+    queries[QueryType::STATUS] = std::bind(handleStatus, std::ref(channel), std::ref(calcs), std::ref(tasks));
+
     QueryType currentQuery;
     channel.pop(currentQuery);
     while (currentQuery != QueryType::QUIT)
     {
-      switch (currentQuery)
+      try
       {
-      case QueryType::AREA:
-        handleArea(channel, calcs, tasks, generator);
+        queries.at(currentQuery)();
+      }
+      catch (const std::out_of_range& e)
+      {
+        std::cout << "<INVALID QUERY>\n";
         break;
-      default:
-        std::cerr << "<INVALID QUERY>\n";
-        return 1;
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+        break;
       }
       channel.pop(currentQuery);
     }
@@ -76,6 +85,7 @@ int main()
       cmds["frameset"] = std::bind(cmdFrameSet, std::cref(sets), _1, _2);
 
       cmds["area"] = std::bind(cmdArea, std::ref(channel), std::cref(sets), std::ref(calcs), _1, _2);
+      cmds["status"] = std::bind(cmdStatus, std::ref(channel), std::ref(calcs), _1, _2);
     }
 
     std::string cmd;

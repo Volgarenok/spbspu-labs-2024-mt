@@ -27,6 +27,7 @@ namespace kravchenko
   void cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
 
   void cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
+  void cmdStatus(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out);
 
   namespace cmd
   {

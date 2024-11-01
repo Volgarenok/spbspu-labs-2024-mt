@@ -1,6 +1,8 @@
 #include "commands.hpp"
 #include <exception>
+#include <iomanip>
 #include <iterator>
+#include <stream_guard.hpp>
 #include "compute_handler.hpp"
 
 void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
@@ -96,6 +98,37 @@ void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap
   channel.push(threads);
   channel.push(tries);
   calcs[calcName] = 0.0;
+}
+
+void kravchenko::cmdStatus(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out)
+{
+  auto statusIt = cmd::findElement(calcs, in);
+  if ((*statusIt).second != 0.0)
+  {
+    StreamGuard guard(out);
+    out << std::setprecision(3) << std::fixed;
+    out << (*statusIt).second << '\n';
+    return;
+  }
+
+  channel.push(QueryType::STATUS);
+  channel.pushContainer((*statusIt).first);
+
+  bool isReady = false;
+  channel.pop(isReady);
+  if (isReady)
+  {
+    double area = 0.0;
+    channel.pop(area);
+    (*calcs.erase(statusIt, statusIt)).second = area;
+    StreamGuard guard(out);
+    out << std::setprecision(3) << std::fixed;
+    out << area << '\n';
+  }
+  else
+  {
+    out << "<IN PROGRESS>\n";
+  }
 }
 
 kravchenko::cmd::FramePred::FramePred(const Circle& c):

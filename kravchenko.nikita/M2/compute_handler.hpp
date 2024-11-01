@@ -17,10 +17,12 @@ namespace kravchenko
   enum class QueryType
   {
     QUIT,
-    AREA
+    AREA,
+    STATUS
   };
 
   void handleArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks, GeneratorT& gen);
+  void handleStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks);
   void startCalc(CalcMap::iterator calcIt, CircleData data, size_t threads, size_t tries, GeneratorT& gen);
 }
 
