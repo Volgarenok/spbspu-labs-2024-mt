@@ -1,6 +1,6 @@
 #include "CircleInput.hpp"
 #include <istream>
-#include <SizeType.hpp>
+#include "SizeType.hpp"
 
 std::istream& novikov::operator>>(std::istream& in, CircleInput& circle)
 {
