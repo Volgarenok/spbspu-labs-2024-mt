@@ -17,57 +17,61 @@ int main(int argc, char* argv[])
     std::cerr << "Invalid number of arguments\n";
     return 1;
   }
-  size_t seed = 0;
+  size_t generatorSeed = 0;
   if (argc == 2)
   {
     try
     {
-      std::stoull((argv[1][0] != '-') ? argv[1] : "error");
+      generatorSeed = std::stoull((argv[1][0] != '-') ? argv[1] : "invalid");
     }
-    catch (const std::exception& e)
+    catch (...)
     {
-      std::cerr << e.what() << '\n';
+      std::cerr << "Invalid seed\n";
       return 1;
     }
   }
 
-  int fdsToCompute[2] = {};
-  int fdsToUser[2] = {};
-  if (pipe(fdsToCompute) < 0 || pipe(fdsToUser) < 0)
+  int fdsUserToCompute[2] = {};
+  int fdsComputeToUser[2] = {};
+  if (pipe(fdsUserToCompute) < 0 || pipe(fdsComputeToUser) < 0)
   {
     std::cerr << "Pipe creation error: " << strerror(errno) << '\n';
     return 1;
   }
-  pid_t cpid = fork();
-  if (cpid == -1)
+  pid_t childPid = fork();
+  if (childPid == -1)
   {
-    close(fdsToCompute[0]);
-    close(fdsToCompute[1]);
-    close(fdsToUser[0]);
-    close(fdsToUser[1]);
+    close(fdsUserToCompute[0]);
+    close(fdsUserToCompute[1]);
+    close(fdsComputeToUser[0]);
+    close(fdsComputeToUser[1]);
     std::cerr << "Process fork error: " << strerror(errno) << '\n';
     return 1;
   }
   using namespace kravchenko;
-  if (cpid == 0)
+  if (childPid == 0)
   {
-    PipeChannel channel(fdsToCompute, fdsToUser);
-
-    GeneratorT generator(seed);
+    PipeChannel channel(fdsUserToCompute, fdsComputeToUser);
+    GeneratorT generator(generatorSeed);
     ThreadMap tasks;
     CalcMap calcs;
-    std::unordered_map< QueryType, std::function< void() > > queries;
-    queries[QueryType::AREA] = std::bind(handleArea, std::ref(channel), std::ref(calcs), std::ref(tasks), std::ref(generator));
-    queries[QueryType::STATUS] = std::bind(handleStatus, std::ref(channel), std::ref(calcs), std::ref(tasks));
-    queries[QueryType::WAIT] = std::bind(handleWait, std::ref(channel), std::ref(calcs), std::ref(tasks));
 
-    QueryType currentQuery;
+    std::unordered_map< QueryType, std::function< void(PipeChannel&) > > queries;
+    {
+      using namespace std::placeholders;
+      queries[QueryType::AREA] = std::bind(handleArea, _1, std::ref(calcs), std::ref(tasks), std::ref(generator));
+      queries[QueryType::STATUS] = std::bind(handleStatus, _1, std::ref(calcs), std::ref(tasks));
+      queries[QueryType::WAIT] = std::bind(handleWait, _1, std::ref(calcs), std::ref(tasks));
+    }
+
+    QueryType currentQuery = 0;
     channel.pop(currentQuery);
     while (currentQuery != QueryType::QUIT)
     {
       try
       {
-        queries.at(currentQuery)();
+        queries.at(currentQuery)(channel);
+        channel.pop(currentQuery);
       }
       catch (const std::out_of_range& e)
       {
@@ -79,7 +83,6 @@ int main(int argc, char* argv[])
         std::cerr << e.what() << '\n';
         break;
       }
-      channel.pop(currentQuery);
     }
     for (auto& task : tasks)
     {
@@ -88,11 +91,11 @@ int main(int argc, char* argv[])
   }
   else
   {
-    PipeChannel channel(fdsToUser, fdsToCompute);
-
+    PipeChannel channel(fdsComputeToUser, fdsUserToCompute);
     CircleMap circles;
     CircleSetMap sets;
     CalcMap calcs;
+
     std::unordered_map< std::string, std::function< void(std::istream&, std::ostream&) > > cmds;
     {
       using namespace std::placeholders;
@@ -133,7 +136,7 @@ int main(int argc, char* argv[])
     }
     channel.push(QueryType::QUIT);
 
-    if (waitpid(cpid, nullptr, 0) != cpid)
+    if (waitpid(childPid, nullptr, 0) != childPid)
     {
       std::cerr << "Process wait failed: " << strerror(errno) << '\n';
       return 1;
