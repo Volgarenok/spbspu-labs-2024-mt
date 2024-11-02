@@ -41,6 +41,7 @@ int main()
     std::unordered_map< QueryType, std::function< void() > > queries;
     queries[QueryType::AREA] = std::bind(handleArea, std::ref(channel), std::ref(calcs), std::ref(tasks), std::ref(generator));
     queries[QueryType::STATUS] = std::bind(handleStatus, std::ref(channel), std::ref(calcs), std::ref(tasks));
+    queries[QueryType::WAIT] = std::bind(handleWait, std::ref(channel), std::ref(calcs), std::ref(tasks));
 
     QueryType currentQuery;
     channel.pop(currentQuery);
@@ -85,7 +86,8 @@ int main()
       cmds["frameset"] = std::bind(cmdFrameSet, std::cref(sets), _1, _2);
 
       cmds["area"] = std::bind(cmdArea, std::ref(channel), std::cref(sets), std::ref(calcs), _1, _2);
-      cmds["status"] = std::bind(cmdStatus, std::ref(channel), std::ref(calcs), _1, _2);
+      cmds["status"] = std::bind(cmdSync< false >, std::ref(channel), std::ref(calcs), _1, _2);
+      cmds["wait"] = std::bind(cmdSync< true >, std::ref(channel), std::ref(calcs), _1, _2);
     }
 
     std::string cmd;

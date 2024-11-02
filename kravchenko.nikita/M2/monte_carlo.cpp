@@ -6,6 +6,7 @@
 namespace kravchenko
 {
   using HitData = std::vector< size_t >;
+  using DisributionT = std::uniform_real_distribution< double >;
   PointD generatePoint(DisributionT& distX, DisributionT& distY, GeneratorT& gen);
   bool isPointInCircle(const PointD& p, const Circle& c);
   bool pointPred(const PointD& p, CircleData::const_iterator begin, CircleData::const_iterator end);

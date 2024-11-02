@@ -3,12 +3,15 @@
 
 #include <algorithm>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <stream_guard.hpp>
 #include "circle.hpp"
+#include "compute_handler.hpp"
 #include "pipe_channel.hpp"
 
 namespace kravchenko
@@ -27,7 +30,8 @@ namespace kravchenko
   void cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out);
 
   void cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&);
-  void cmdStatus(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out);
+  template < bool isWait >
+  void cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out);
 
   namespace cmd
   {
@@ -35,7 +39,7 @@ namespace kravchenko
     typename Map::const_iterator findElement(const Map& map, std::istream& in);
 
     template < class CircleDataConstIt >
-    Frame getFrameSet(CircleDataConstIt begin, CircleDataConstIt end);
+    Frame getFrameSet(CircleDataConstIt cbegin, CircleDataConstIt cend);
 
     struct FramePred
     {
@@ -43,6 +47,7 @@ namespace kravchenko
       void operator()(const Circle& c);
       Frame frame;
     };
+
   }
 }
 
@@ -68,6 +73,38 @@ kravchenko::Frame kravchenko::cmd::getFrameSet(CircleDataConstIt cbegin, CircleD
   FramePred pred(*(cbegin++));
   std::for_each(cbegin, cend, std::ref(pred));
   return pred.frame;
+}
+
+template < bool isWait >
+void kravchenko::cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out)
+{
+  auto statusIt = cmd::findElement(calcs, in);
+  if ((*statusIt).second != 0.0)
+  {
+    StreamGuard guard(out);
+    out << std::setprecision(3) << std::fixed;
+    out << (*statusIt).second << '\n';
+    return;
+  }
+
+  channel.push((isWait) ? QueryType::WAIT : QueryType::STATUS);
+  channel.pushContainer((*statusIt).first);
+
+  bool isReady = false;
+  channel.pop(isReady);
+  if (isReady)
+  {
+    double area = 0.0;
+    channel.pop(area);
+    calcs[(*statusIt).first] = area;
+    StreamGuard guard(out);
+    out << std::setprecision(3) << std::fixed;
+    out << area << '\n';
+  }
+  else if (!isWait)
+  {
+    out << "<IN PROGRESS>\n";
+  }
 }
 
 #endif
