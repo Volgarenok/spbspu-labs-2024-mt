@@ -1,8 +1,5 @@
 #include "set.hpp"
-#include "circle.hpp"
 #include <cstddef>
-#include <string>
-#include <utility>
 
 void piyavkin::Set::insert(const Circle &c)
 {
@@ -49,7 +46,7 @@ piyavkin::Set piyavkin::parse(const std::string& str)
 {
   size_t sp = str.find(' ');
   std::string ns = str.substr(0, sp);
-  size_t n = stoull(ns);
+  size_t n = std::stoull(ns);
   Set st;
   size_t curr = sp + 1;
   std::vector< double > c(3, 0);
