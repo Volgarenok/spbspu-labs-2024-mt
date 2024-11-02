@@ -2,7 +2,6 @@
 #include <functional>
 #include <iostream>
 #include <limits>
-#include <random>
 #include <string>
 #include <unordered_map>
 #include <sys/wait.h>
@@ -11,8 +10,27 @@
 #include "compute_handler.hpp"
 #include "pipe_channel.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc > 2)
+  {
+    std::cerr << "Invalid number of arguments\n";
+    return 1;
+  }
+  size_t seed = 0;
+  if (argc == 2)
+  {
+    try
+    {
+      std::stoull((argv[1][0] != '-') ? argv[1] : "error");
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+      return 1;
+    }
+  }
+
   int fdsToCompute[2] = {};
   int fdsToUser[2] = {};
   if (pipe(fdsToCompute) < 0 || pipe(fdsToUser) < 0)
@@ -35,7 +53,7 @@ int main()
   {
     PipeChannel channel(fdsToCompute, fdsToUser);
 
-    GeneratorT generator;
+    GeneratorT generator(seed);
     ThreadMap tasks;
     CalcMap calcs;
     std::unordered_map< QueryType, std::function< void() > > queries;
