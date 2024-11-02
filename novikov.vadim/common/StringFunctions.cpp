@@ -1,4 +1,4 @@
-#include "StringParseFunctions.hpp"
+#include "StringFunctions.hpp"
 #include <cctype>
 #include <stdexcept>
 

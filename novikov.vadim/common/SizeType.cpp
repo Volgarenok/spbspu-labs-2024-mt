@@ -4,7 +4,7 @@
 #include <numeric>
 #include <vector>
 #include <string>
-#include "StringParseFunctions.hpp"
+#include "StringFunctions.hpp"
 
 std::istream& novikov::operator>>(std::istream& in, SizeType& value)
 {

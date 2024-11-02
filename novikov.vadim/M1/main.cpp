@@ -6,7 +6,7 @@
 #include <iterator>
 #include <algorithm>
 #include "AreaComputer.hpp"
-#include "StringParseFunctions.hpp"
+#include "StringFunctions.hpp"
 
 int main(int argc, char* argv[])
 {
