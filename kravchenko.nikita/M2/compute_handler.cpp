@@ -15,7 +15,7 @@ void kravchenko::startCalc(CalcMap::iterator calcIt, CircleData data, size_t thr
     PointDData points = generatePoints(tries, gen, frame);
     (*calcIt).second = computeArea(points, data, frame, threads);
   }
-  catch (const std::exception& e)
+  catch (...)
   {
     (*calcIt).second = -1.0;
   }

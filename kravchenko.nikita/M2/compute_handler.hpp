@@ -11,7 +11,8 @@ namespace kravchenko
 {
   using ThreadMap = std::unordered_map< std::string, std::thread >;
   using CalcMap = std::unordered_map< std::string, double >;
-  enum class QueryType
+
+  enum QueryType
   {
     QUIT,
     AREA,

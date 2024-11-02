@@ -1,6 +1,7 @@
 #include "commands.hpp"
 #include <exception>
 #include <iterator>
+#include <stream_guard.hpp>
 
 void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
 {
@@ -108,4 +109,16 @@ void kravchenko::cmd::FramePred::operator()(const Circle& c)
   frame.leftBottom.y = std::min(frame.leftBottom.y, compared.leftBottom.y);
   frame.rightTop.x = std::max(frame.rightTop.x, compared.rightTop.x);
   frame.rightTop.y = std::max(frame.rightTop.y, compared.rightTop.y);
+}
+
+void kravchenko::cmd::printArea(std::ostream& out, double area)
+{
+  if (area == -1.0)
+  {
+    out << "<CALC ERROR OCCURED>\n";
+    return;
+  }
+  StreamGuard guard(out);
+  out << std::setprecision(3) << std::fixed;
+  out << area << '\n';
 }

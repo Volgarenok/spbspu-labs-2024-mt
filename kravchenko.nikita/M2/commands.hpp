@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <stream_guard.hpp>
 #include "circle.hpp"
 #include "compute_handler.hpp"
 #include "pipe_channel.hpp"
@@ -48,6 +47,7 @@ namespace kravchenko
       Frame frame;
     };
 
+    void printArea(std::ostream& out, double area);
   }
 }
 
@@ -81,9 +81,7 @@ void kravchenko::cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in,
   auto statusIt = cmd::findElement(calcs, in);
   if ((*statusIt).second != 0.0)
   {
-    StreamGuard guard(out);
-    out << std::setprecision(3) << std::fixed;
-    out << (*statusIt).second << '\n';
+    cmd::printArea(out, (*statusIt).second);
     return;
   }
 
@@ -97,9 +95,7 @@ void kravchenko::cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in,
     double area = 0.0;
     channel.pop(area);
     calcs[(*statusIt).first] = area;
-    StreamGuard guard(out);
-    out << std::setprecision(3) << std::fixed;
-    out << area << '\n';
+    cmd::printArea(out, area);
   }
   else if (!isWait)
   {

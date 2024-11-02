@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
       queries[QueryType::WAIT] = std::bind(handleWait, _1, std::ref(calcs), std::ref(tasks));
     }
 
-    QueryType currentQuery = 0;
+    QueryType currentQuery;
     channel.pop(currentQuery);
     while (currentQuery != QueryType::QUIT)
     {
