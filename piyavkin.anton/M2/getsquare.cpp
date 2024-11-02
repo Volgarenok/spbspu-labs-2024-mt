@@ -1,7 +1,4 @@
 #include "getsquare.hpp"
-#include "base-types.hpp"
-#include <cstddef>
-#include <functional>
 #include <iostream>
 #include <numeric>
 #include <thread>

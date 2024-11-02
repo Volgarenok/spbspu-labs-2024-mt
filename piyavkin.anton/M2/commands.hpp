@@ -38,5 +38,6 @@ namespace piyavkin
     out << mp.at(name).getFrame() << '\n';
   }
   void calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket);
+  void recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int socket);
 }
 #endif

@@ -1,13 +1,19 @@
+#include <cstring>
+#include <exception>
 #include <iostream>
 #include <functional>
+#include <stdexcept>
+#include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <thread>
 #include <unistd.h>
 #include <getpositivenum.hpp>
 #include "createpoints.hpp"
 #include "commands.hpp"
 #include "getsquare.hpp"
+#include "childcommands.hpp"
 #include "unlinkfileguard.hpp"
 
 int main(int argc, char* argv[])
@@ -59,6 +65,16 @@ int main(int argc, char* argv[])
       std::cerr << "Acceptance not completed\n";
       return 1;
     }
+    std::map< char, std::function< void(calc_t&, const std::string&, std::map< std::string, std::thread >&) > > childCmd;
+    calc_t calcs;
+    std::minstd_rand gen(seed);
+    std::map< std::string, std::thread > threads;
+    {
+      using namespace std::placeholders;
+      childCmd['a'] = std::bind(calculateAreaSet, _1, std::ref(gen), _2, _3);
+      childCmd['s'] = std::bind(sendStatus, _1, _2, listening, _3);
+      childCmd['w'] = std::bind(waitStatus, _1, _2, listening, _3);
+    }
     char buffer[1000] = {};
     while (true)
     {
@@ -68,17 +84,28 @@ int main(int argc, char* argv[])
         std::cerr << "Data not received\n";
         return 1;
       }
-      std::string tn(buffer);
-      size_t curr = tn.find(' ');
-      size_t th = std::stoull(tn.substr(0, curr));
-      ++curr;
-      size_t tries = std::stoull(tn.substr(curr, tn.find(' ', curr)));
-      Set st = parse(tn.substr(tn.find(' ', curr) + 1));
-      data_t points;
-      std::minstd_rand gen(seed);
-      rectangle_t r = st.getFrame();
-      createPoints(gen, points, r, tries);
-      double square = getSquare(points, st, r, th);
+      try
+      {
+        std::string tn(std::string(buffer).substr(2));
+        childCmd.at(buffer[0])(calcs, tn, threads);
+      }
+      catch (const std::out_of_range&)
+      {
+        for (auto&& x: threads)
+        {
+          x.second.join();
+        }
+        return 0;
+      }
+      catch (const std::exception& e)
+      {
+        for (auto&& x: threads)
+        {
+          x.second.join();
+        }
+        std::cerr << e.what() << '\n';
+        return 3;
+      }
     }
   }
   else
@@ -112,6 +139,7 @@ int main(int argc, char* argv[])
       cmd["showset"] = std::bind(output< Set >, _1, std::ref(std::cout), std::cref(sets));
       cmd["frameset"] = std::bind(outputFrame< Set >, _1, std::ref(std::cout), std::cref(sets));
       cmd["area"] = std::bind(calcArea, _1, std::ref(sets), std::ref(calcs), sock);
+      cmd["status"] = std::bind(recStatus, _1, std::ref(std::cout), std::ref(calcs), sock);
     }
     std::string name;
     while (std::cin >> name)
@@ -127,5 +155,7 @@ int main(int argc, char* argv[])
       std::cin.clear();
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
+    const char* m = "exit";
+    send(sock, m, std::strlen(m), 0);
   }
 }
