@@ -20,9 +20,9 @@ namespace kravchenko
     WAIT
   };
 
-  void handleArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks, GeneratorT& gen);
-  void handleStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks);
-  void handleWait(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks);
+  void queryArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks, GeneratorT& gen);
+  void queryStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks);
+  void queryWait(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks);
 }
 
 #endif

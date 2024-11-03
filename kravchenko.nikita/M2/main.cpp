@@ -7,8 +7,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include "commands.hpp"
-#include "compute_handler.hpp"
 #include "pipe_channel.hpp"
+#include "queries.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -56,12 +56,12 @@ int main(int argc, char* argv[])
     ThreadMap tasks;
     CalcMap calcs;
 
-    std::unordered_map< QueryType, std::function< void(PipeChannel&) > > queries;
+    std::unordered_map< QueryType, std::function< void(PipeChannel&, CalcMap&, ThreadMap&) > > queries;
     {
       using namespace std::placeholders;
-      queries[QueryType::AREA] = std::bind(handleArea, _1, std::ref(calcs), std::ref(tasks), std::ref(generator));
-      queries[QueryType::STATUS] = std::bind(handleStatus, _1, std::ref(calcs), std::ref(tasks));
-      queries[QueryType::WAIT] = std::bind(handleWait, _1, std::ref(calcs), std::ref(tasks));
+      queries[QueryType::AREA] = std::bind(queryArea, _1, _2, _3, std::ref(generator));
+      queries[QueryType::STATUS] = queryStatus;
+      queries[QueryType::WAIT] = queryWait;
     }
 
     QueryType currentQuery;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     {
       try
       {
-        queries.at(currentQuery)(channel);
+        queries.at(currentQuery)(channel, calcs, tasks);
         channel.pop(currentQuery);
       }
       catch (const std::out_of_range& e)

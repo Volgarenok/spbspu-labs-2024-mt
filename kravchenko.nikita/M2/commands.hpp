@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 #include "circle.hpp"
-#include "compute_handler.hpp"
 #include "pipe_channel.hpp"
+#include "queries.hpp"
 
 namespace kravchenko
 {

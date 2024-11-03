@@ -1,4 +1,4 @@
-#include "compute_handler.hpp"
+#include "queries.hpp"
 #include <exception>
 #include "commands.hpp"
 
@@ -21,7 +21,7 @@ void kravchenko::startCalc(CalcMap::iterator calcIt, CircleData data, size_t thr
   }
 }
 
-void kravchenko::handleArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks, GeneratorT& gen)
+void kravchenko::queryArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks, GeneratorT& gen)
 {
   std::string calcName;
   CircleData data;
@@ -35,7 +35,7 @@ void kravchenko::handleArea(PipeChannel& channel, CalcMap& calcs, ThreadMap& tas
   tasks[calcName] = std::thread(startCalc, it, data, threads, tries, std::ref(gen));
 }
 
-void kravchenko::handleStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks)
+void kravchenko::queryStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks)
 {
   std::string calcName;
   channel.popContainer(calcName);
@@ -51,7 +51,7 @@ void kravchenko::handleStatus(PipeChannel& channel, CalcMap& calcs, ThreadMap& t
   }
 }
 
-void kravchenko::handleWait(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks)
+void kravchenko::queryWait(PipeChannel& channel, CalcMap& calcs, ThreadMap& tasks)
 {
   std::string calcName;
   channel.popContainer(calcName);
