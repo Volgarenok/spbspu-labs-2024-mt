@@ -42,30 +42,30 @@ void kravchenko::cmdSet(CircleSetMap& sets, const CircleMap& circles, std::istre
   data.reserve(size);
   for (size_t i = 0; i < size; ++i)
   {
-    data.push_back((*cmd::findElement(circles, in)).second);
+    data.push_back((*cmd::findInputElement(circles, in)).second);
   }
   sets[setName] = data;
 }
 
 void kravchenko::cmdShow(const CircleMap& circles, std::istream& in, std::ostream& out)
 {
-  out << (*cmd::findElement(circles, in)).second << '\n';
+  out << (*cmd::findInputElement(circles, in)).second << '\n';
 }
 
 void kravchenko::cmdShowSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
 {
-  const CircleWrappedData& set = (*cmd::findElement(sets, in)).second;
+  const CircleWrappedData& set = (*cmd::findInputElement(sets, in)).second;
   std::copy(set.cbegin(), set.cend(), std::ostream_iterator< Circle >{ out, "\n" });
 }
 
 void kravchenko::cmdFrame(const CircleMap& circles, std::istream& in, std::ostream& out)
 {
-  out << (*cmd::findElement(circles, in)).second.getFrame() << '\n';
+  out << (*cmd::findInputElement(circles, in)).second.getFrame() << '\n';
 }
 
 void kravchenko::cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
 {
-  const CircleWrappedData& data = (*cmd::findElement(sets, in)).second;
+  const CircleWrappedData& data = (*cmd::findInputElement(sets, in)).second;
   out << getFrameSet(data.cbegin(), data.cend()) << '\n';
 }
 
@@ -77,7 +77,7 @@ void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap
   {
     throw std::invalid_argument("<CALC ALREADY EXISTS>");
   }
-  auto setToSendIt = cmd::findElement(sets, in);
+  auto setToSendIt = cmd::findInputElement(sets, in);
   size_t threads = 0;
   size_t tries = 0;
   in >> threads >> tries;
@@ -100,7 +100,7 @@ void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap
   calcs[calcName] = 0.0;
 }
 
-void kravchenko::cmd::printArea(std::ostream& out, double area)
+void kravchenko::cmd::displayArea(std::ostream& out, double area)
 {
   if (area == -1.0)
   {

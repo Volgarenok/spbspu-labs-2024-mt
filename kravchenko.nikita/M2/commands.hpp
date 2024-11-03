@@ -34,14 +34,14 @@ namespace kravchenko
   namespace cmd
   {
     template < class Map >
-    typename Map::const_iterator findElement(const Map& map, std::istream& in);
+    typename Map::const_iterator findInputElement(const Map& map, std::istream& in);
 
-    void printArea(std::ostream& out, double area);
+    void displayArea(std::ostream& out, double area);
   }
 }
 
 template < class Map >
-typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::istream& in)
+typename Map::const_iterator kravchenko::cmd::findInputElement(const Map& map, std::istream& in)
 {
   std::string name;
   if (!(in >> name))
@@ -59,10 +59,10 @@ typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::i
 template < bool isWait >
 void kravchenko::cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in, std::ostream& out)
 {
-  auto statusIt = cmd::findElement(calcs, in);
+  auto statusIt = cmd::findInputElement(calcs, in);
   if ((*statusIt).second != 0.0)
   {
-    cmd::printArea(out, (*statusIt).second);
+    cmd::displayArea(out, (*statusIt).second);
     return;
   }
 
@@ -76,7 +76,7 @@ void kravchenko::cmdSync(PipeChannel& channel, CalcMap& calcs, std::istream& in,
     double area = 0.0;
     channel.pop(area);
     calcs[(*statusIt).first] = area;
-    cmd::printArea(out, area);
+    cmd::displayArea(out, area);
   }
   else if (!isWait)
   {
