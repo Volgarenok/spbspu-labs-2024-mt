@@ -1,6 +1,5 @@
 #include "queries.hpp"
 #include <exception>
-#include "commands.hpp"
 
 namespace kravchenko
 {
@@ -11,7 +10,7 @@ void kravchenko::startCalc(CalcMap::iterator calcIt, CircleData data, size_t thr
 {
   try
   {
-    Frame frame = cmd::getFrameSet(data.cbegin(), data.cend());
+    Frame frame = getFrameSet(data.cbegin(), data.cend());
     PointDData points = generatePoints(tries, gen, frame);
     (*calcIt).second = computeArea(points, data, frame, threads);
   }

@@ -1,7 +1,9 @@
 #include "commands.hpp"
+#include <algorithm>
 #include <exception>
 #include <iterator>
 #include <stream_guard.hpp>
+#include "monte_carlo.hpp"
 
 void kravchenko::cmdCircle(CircleMap& circles, std::istream& in, std::ostream&)
 {
@@ -64,7 +66,7 @@ void kravchenko::cmdFrame(const CircleMap& circles, std::istream& in, std::ostre
 void kravchenko::cmdFrameSet(const CircleSetMap& sets, std::istream& in, std::ostream& out)
 {
   const CircleWrappedData& data = (*cmd::findElement(sets, in)).second;
-  out << cmd::getFrameSet(data.cbegin(), data.cend()) << '\n';
+  out << getFrameSet(data.cbegin(), data.cend()) << '\n';
 }
 
 void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap& calcs, std::istream& in, std::ostream&)
@@ -96,19 +98,6 @@ void kravchenko::cmdArea(PipeChannel& channel, const CircleSetMap& sets, CalcMap
   channel.push(threads);
   channel.push(tries);
   calcs[calcName] = 0.0;
-}
-
-kravchenko::cmd::FramePred::FramePred(const Circle& c):
-  frame(c.getFrame())
-{}
-
-void kravchenko::cmd::FramePred::operator()(const Circle& c)
-{
-  Frame compared = c.getFrame();
-  frame.leftBottom.x = std::min(frame.leftBottom.x, compared.leftBottom.x);
-  frame.leftBottom.y = std::min(frame.leftBottom.y, compared.leftBottom.y);
-  frame.rightTop.x = std::max(frame.rightTop.x, compared.rightTop.x);
-  frame.rightTop.y = std::max(frame.rightTop.y, compared.rightTop.y);
 }
 
 void kravchenko::cmd::printArea(std::ostream& out, double area)

@@ -1,7 +1,6 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
-#include <algorithm>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -37,16 +36,6 @@ namespace kravchenko
     template < class Map >
     typename Map::const_iterator findElement(const Map& map, std::istream& in);
 
-    template < class CircleDataConstIt >
-    Frame getFrameSet(CircleDataConstIt cbegin, CircleDataConstIt cend);
-
-    struct FramePred
-    {
-      FramePred(const Circle& c);
-      void operator()(const Circle& c);
-      Frame frame;
-    };
-
     void printArea(std::ostream& out, double area);
   }
 }
@@ -65,14 +54,6 @@ typename Map::const_iterator kravchenko::cmd::findElement(const Map& map, std::i
     throw std::invalid_argument("<ELEMENT " + name + " NOT FOUND>");
   }
   return foundIt;
-}
-
-template < class CircleDataConstIt >
-kravchenko::Frame kravchenko::cmd::getFrameSet(CircleDataConstIt cbegin, CircleDataConstIt cend)
-{
-  FramePred pred(*(cbegin++));
-  std::for_each(cbegin, cend, std::ref(pred));
-  return pred.frame;
 }
 
 template < bool isWait >

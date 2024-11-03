@@ -1,5 +1,4 @@
 #include "monte_carlo.hpp"
-#include <algorithm>
 #include <functional>
 #include <thread>
 
@@ -19,11 +18,11 @@ kravchenko::PointD kravchenko::generatePoint(DisributionT& distX, DisributionT& 
   return { distX(gen), distY(gen) };
 }
 
-kravchenko::PointDData kravchenko::generatePoints(size_t count, GeneratorT& gen, const Frame& area)
+kravchenko::PointDData kravchenko::generatePoints(size_t count, GeneratorT& gen, const Frame& frame)
 {
   PointDData points(count);
-  DisributionT distX(area.leftBottom.x, area.rightTop.x);
-  DisributionT distY(area.leftBottom.y, area.rightTop.y);
+  DisributionT distX(frame.leftBottom.x, frame.rightTop.x);
+  DisributionT distY(frame.leftBottom.y, frame.rightTop.y);
   auto pointGen = std::bind(generatePoint, std::ref(distX), std::ref(distY), std::ref(gen));
   std::generate(points.begin(), points.end(), pointGen);
   return points;
@@ -77,4 +76,17 @@ double kravchenko::computeArea(const PointDData& points, const CircleData& circl
   double ratio = std::accumulate(hits.cbegin(), hits.cend(), 0ull) / static_cast< double >(points.size());
   int area = (frame.rightTop.x - frame.leftBottom.x) * (frame.rightTop.y - frame.leftBottom.y);
   return ratio * area;
+}
+
+kravchenko::pred::FramePred::FramePred(const Circle& c):
+  frame(c.getFrame())
+{}
+
+void kravchenko::pred::FramePred::operator()(const Circle& c)
+{
+  Frame compared = c.getFrame();
+  frame.leftBottom.x = std::min(frame.leftBottom.x, compared.leftBottom.x);
+  frame.leftBottom.y = std::min(frame.leftBottom.y, compared.leftBottom.y);
+  frame.rightTop.x = std::max(frame.rightTop.x, compared.rightTop.x);
+  frame.rightTop.y = std::max(frame.rightTop.y, compared.rightTop.y);
 }
