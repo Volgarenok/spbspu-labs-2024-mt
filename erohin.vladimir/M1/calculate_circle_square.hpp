@@ -2,9 +2,6 @@
 #define CALCULATE_CIRCLE_SQUARE_HPP
 
 #include <vector>
-#include <functional>
-#include <algorithm>
-#include <random>
 #include "generate_random_point.hpp"
 
 namespace erohin
