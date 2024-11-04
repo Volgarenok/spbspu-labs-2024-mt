@@ -5,7 +5,7 @@
 
 namespace erohin
 {
-  double calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number);
+  double calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number, size_t seed);
 }
 
 #endif

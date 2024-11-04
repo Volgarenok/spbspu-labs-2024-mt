@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <iomanip>
 #include "calculate_circle_square.hpp"
 
 int main(int argc, char * argv[])
@@ -45,14 +46,14 @@ int main(int argc, char * argv[])
       std::cerr << "Wrong circle radius or threads number\n";
       return 4;
     }
-    auto start = std::chrono::high_resolution_clock.now();
-    double result = erohin::calculateCircleSquare(radius, threads_number, tries_number);
-    auto end = std::chrono::high_resolution_clock.now();
+    auto start = std::chrono::high_resolution_clock::now();
+    double result = erohin::calculateCircleSquare(radius, threads_number, tries_number, seed);
+    auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count();
     std::cout << std::fixed << std::setprecision(3);
     std::cout << static_cast< double >(time) << " " << result << "\n";
   }
-  if (!std.cin)
+  if (!std::cin.eof())
   {
     std::cerr << "Wrong circle radius or threads number\n";
     return 4;
