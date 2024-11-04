@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
-#include "calculate_circle_square.hpp"
+#include "calculate_circle_area.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
       return 4;
     }
     auto start = std::chrono::high_resolution_clock::now();
-    double result = erohin::calculateCircleSquare(radius, threads_number, tries_number, seed);
+    double result = erohin::calculateCircleArea(radius, threads_number, tries_number, seed);
     auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast< std::chrono::microseconds >(end - start).count();
     std::cout << std::fixed << std::setprecision(3);

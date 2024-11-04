@@ -1,4 +1,4 @@
-#include "calculate_circle_square.hpp"
+#include "calculate_circle_area.hpp"
 #include <vector>
 #include <functional>
 #include <algorithm>
@@ -27,7 +27,7 @@ void erohin::countPoints(const point_array_t & points, size_t index, size_t numb
   result = std::count_if(points.cbegin() + index, points.cbegin() + index + number, point_predicate);
 }
 
-double erohin::calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number, size_t seed)
+double erohin::calculateCircleArea(size_t radius, size_t threads_number, size_t tries_number, size_t seed)
 {
   point_array_t points(tries_number);
   generatePoints(points, radius, seed);
@@ -46,6 +46,6 @@ double erohin::calculateCircleSquare(size_t radius, size_t threads_number, size_
     cur_thread.join();
   }
   size_t filled_points_number = std::accumulate(results.cbegin(), results.cend(), 0);
-  double square = static_cast< double >(filled_points_number) / tries_number * 4 * radius * radius;
-  return square;
+  double area = static_cast< double >(filled_points_number) / tries_number * 4 * radius * radius;
+  return area;
 }
