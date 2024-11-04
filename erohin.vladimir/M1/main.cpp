@@ -49,9 +49,9 @@ int main(int argc, char * argv[])
     auto start = std::chrono::high_resolution_clock::now();
     double result = erohin::calculateCircleSquare(radius, threads_number, tries_number, seed);
     auto end = std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count();
+    auto time = std::chrono::duration_cast< std::chrono::microseconds >(end - start).count();
     std::cout << std::fixed << std::setprecision(3);
-    std::cout << static_cast< double >(time) << " " << result << "\n";
+    std::cout << static_cast< double >(time) / 1000 << " " << result << "\n";
   }
   if (!std::cin.eof())
   {
