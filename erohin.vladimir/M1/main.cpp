@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include "calculate_circle_square.hpp"
 
 int main(int argc, char * argv[])
 {
@@ -11,6 +13,10 @@ int main(int argc, char * argv[])
   try
   {
     tries_number = std::stoull(argv[1]);
+    if (tries_number == 0)
+    {
+      throw std::logic_error("Tries number cannot be zero");
+    }
   }
   catch (const std::exception & e)
   {
@@ -29,6 +35,17 @@ int main(int argc, char * argv[])
       std::cerr << e.what() << "\n";
       return 3;
     }
+  }
+  size_t radius = 0;
+  size_t threads_number = 0;
+  while (std::cin >> radius >> threads_number)
+  {
+    auto start = std::chrono::high_resolution_clock.now();
+    double result = erohin::calculateCircleSquare(radius, threads_number, tries_number);
+    auto end = std::chrono::high_resolution_clock.now();
+    auto time = std::chrono::duration_cast< std::chrono::milliseconds >(end - start).count();
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << static_cast< double >(time) << " " << result << "\n";
   }
   return 0;
 }
