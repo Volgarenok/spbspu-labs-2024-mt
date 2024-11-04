@@ -14,30 +14,29 @@ namespace erohin
   }
 }
 
-void erohin::countRandomPoints(size_t number, size_t radius, std::minstd_rand & generator, size_t & result)
+void erohin::countPoints(const point_array_t & points, size_t index, size_t number, size_t radius, size_t & result)
 {
-  std::vector< point_t > points(number);
-  auto random_point_generator = std::bind(generateRandomPoint, std::ref(generator), radius);
-  std::generate(points.begin(), points.end(), random_point_generator);
-  std::function< bool(point_t) > point_predicate;
-  {
-    using namespace std::placeholders;
-    point_predicate = std::bind(isPointInCircle, _1, radius);
-  }
-  result = std::count_if(points.cbegin(), points.cend(), point_predicate);
+  auto point_predicate = std::bind(isPointInCircle, std::placeholders::_1, radius);
+  result = std::count_if(points.cbegin() + index, points.cbegin() + index + number, point_predicate);
 }
 
 double erohin::calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number, size_t seed)
 {
-  std::vector< std::thread > threads(threads_number - 1);
+  point_array_t points(tries_number);
+  std::minstd_rand generator(seed);
+  auto random_point_generator = std::bind(generateRandomPoint, std::ref(generator), radius);
+  std::generate(points.begin(), points.end(), random_point_generator);
+
+  std::vector< std::thread > threads;
+  threads.reserve(threads_number - 1);
   std::vector< size_t > results(threads_number);
   size_t thread_capacity = tries_number / threads_number;
-  std::minstd_rand generator(seed);
   for (size_t i = 0; i < threads_number - 1; ++i)
   {
-    threads.emplace_back(countRandomPoints, thread_capacity, radius, std::ref(generator), std::ref(results[i]));
+    threads.emplace_back(countPoints, points, i * thread_capacity, thread_capacity, radius, std::ref(results[i]));
   }
-  countRandomPoints(thread_capacity + tries_number % threads_number, radius, generator, results[threads_number - 1]);
+  size_t last_capacity = thread_capacity + tries_number % threads_number;
+  countPoints(points, (threads_number - 1) * thread_capacity, last_capacity, radius, results[threads_number - 1]);
   for (auto && cur_thread: threads)
   {
     cur_thread.join();

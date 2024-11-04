@@ -9,7 +9,9 @@
 
 namespace erohin
 {
-  void countRandomPoints(size_t number, size_t radius, std::minstd_rand & generator, size_t & result);
+  using point_array_t = std::vector< point_t >;
+
+  void countPoints(const point_array_t & points, size_t index, size_t number, size_t radius, size_t & result);
   double calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number, size_t seed);
 }
 
