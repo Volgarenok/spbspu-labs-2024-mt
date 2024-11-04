@@ -31,6 +31,14 @@ int main(int argc, char* argv[])
     }
   }
 
+  struct sigaction epipe = {};
+  epipe.sa_handler = SIG_IN;
+  if (sigaction(SIGPIPE, &epipe, NULL) < 0)
+  {
+    std::cerr << "Failed to install handler: " << strerror(errno) << '\n';
+    return 1;
+  }
+
   int fdsUserToCompute[2] = {};
   int fdsComputeToUser[2] = {};
   if (pipe(fdsUserToCompute) < 0 || pipe(fdsComputeToUser) < 0)
@@ -38,6 +46,7 @@ int main(int argc, char* argv[])
     std::cerr << "Pipe creation error: " << strerror(errno) << '\n';
     return 1;
   }
+
   pid_t childPid = fork();
   if (childPid == -1)
   {
@@ -48,6 +57,7 @@ int main(int argc, char* argv[])
     std::cerr << "Process fork error: " << strerror(errno) << '\n';
     return 1;
   }
+
   using namespace kravchenko;
   if (childPid == 0)
   {
