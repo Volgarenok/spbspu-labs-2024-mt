@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
   }
 
   struct sigaction epipe = {};
-  epipe.sa_handler = SIG_IN;
+  epipe.sa_handler = SIG_IGN;
   if (sigaction(SIGPIPE, &epipe, NULL) < 0)
   {
     std::cerr << "Failed to install handler: " << strerror(errno) << '\n';
