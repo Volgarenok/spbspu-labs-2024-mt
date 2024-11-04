@@ -6,6 +6,13 @@
 #include <thread>
 #include "generate_random_point.hpp"
 
+void erohin::generatePoints(point_array_t & points, size_t limit, size_t seed)
+{
+  std::minstd_rand generator(seed);
+  auto random_point_generator = std::bind(generateRandomPoint, std::ref(generator), limit);
+  std::generate(points.begin(), points.end(), random_point_generator);
+}
+
 namespace erohin
 {
   bool isPointInCircle(point_t point, size_t radius)
@@ -23,10 +30,7 @@ void erohin::countPoints(const point_array_t & points, size_t index, size_t numb
 double erohin::calculateCircleSquare(size_t radius, size_t threads_number, size_t tries_number, size_t seed)
 {
   point_array_t points(tries_number);
-  std::minstd_rand generator(seed);
-  auto random_point_generator = std::bind(generateRandomPoint, std::ref(generator), radius);
-  std::generate(points.begin(), points.end(), random_point_generator);
-
+  generatePoints(points, radius, seed);
   std::vector< std::thread > threads;
   threads.reserve(threads_number - 1);
   std::vector< size_t > results(threads_number);
