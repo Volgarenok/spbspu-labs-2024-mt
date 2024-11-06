@@ -1,5 +1,4 @@
 #include "getsquare.hpp"
-#include <iostream>
 #include <numeric>
 #include <thread>
 

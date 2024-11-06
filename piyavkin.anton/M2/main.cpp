@@ -1,8 +1,10 @@
+#include <cerrno>
 #include <cstring>
 #include <exception>
 #include <iostream>
 #include <functional>
 #include <stdexcept>
+#include <stdio.h>
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -62,6 +64,7 @@ int main(int argc, char* argv[])
     int sock{accept(listening, nullptr, 0)};
     if (sock < 0)
     {
+      close(sock);
       std::cerr << "Acceptance not completed\n";
       return 1;
     }
@@ -78,7 +81,7 @@ int main(int argc, char* argv[])
     char buffer[1000] = {};
     while (true)
     {
-      int sizeMsg = recv(sock, buffer, 1000, 0); 
+      int sizeMsg = read(sock, buffer, 1000);
       if (sizeMsg <= 0)
       {
         std::cerr << "Data not received\n";
@@ -91,6 +94,8 @@ int main(int argc, char* argv[])
       }
       catch (const std::out_of_range&)
       {
+        close(sock);
+        std::cout << "x2" << '\n';
         for (auto&& x: threads)
         {
           x.second.join();
@@ -99,6 +104,7 @@ int main(int argc, char* argv[])
       }
       catch (const std::exception& e)
       {
+        close(sock);
         for (auto&& x: threads)
         {
           x.second.join();
@@ -156,6 +162,10 @@ int main(int argc, char* argv[])
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
     const char* m = "exit";
-    send(sock, m, std::strlen(m), 0);
+    if (send(sock, m, std::strlen(m), 0) < 0)
+    {
+      std::cerr << "The child process failed to terminate\n";
+      return 4;
+    }
   }
 }

@@ -1,7 +1,7 @@
 #include "set.hpp"
 #include <cstddef>
 
-void piyavkin::Set::insert(const Circle &c)
+void piyavkin::Set::insert(const Circle& c)
 {
   set_.push_back( c);
   rectangle_.ll.x = std::min(c.getFrame().ll.x, rectangle_.ll.x);

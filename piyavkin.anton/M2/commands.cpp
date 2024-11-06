@@ -1,9 +1,12 @@
 #include "commands.hpp"
+#include <iostream>
 #include <stdexcept>
 #include <cstring>
+#include <string.h>
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 void piyavkin::inputOb(std::istream& in, const std::string& name, circle_t& mp)
 {
@@ -61,7 +64,7 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
   std::string str;
   str += "a " + calcName + ' ' + std::to_string(th) + ' ' + std::to_string(tries) + ' ' + it->second.getStr();
   const char* cstr = str.c_str();
-  int bytesSent = send(socket, cstr, strlen(cstr), MSG_NOSIGNAL);
+  int bytesSent = write(socket, cstr, strlen(cstr));
   if (bytesSent < 0)
   {
     throw std::logic_error("Error sending data");
@@ -71,7 +74,7 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
 
 void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int socket)
 {
-  std::string name;
+  std::string name = "";
   in >> name;
   auto it = calcs.find(name);
   if (it == calcs.end())
@@ -85,10 +88,14 @@ void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int
   else
   {
     std::string msg = "s " + name;
-    const char* msgc = msg.c_str(); 
-    send(socket, msgc, std::strlen(msgc), 0);
+    const char* msgc = msg.c_str();
+    int sizeSend = write(socket, msgc, std::strlen(msgc));
+    if (sizeSend < 0)
+    {
+      throw std::logic_error(strerror(errno));
+    }
     char buf[1000] = {};
-    int sizeMsg = recv(socket, buf, 1000, 0); 
+    int sizeMsg = read(socket, buf, 1000);
     if (sizeMsg <= 0)
     {
       throw std::logic_error("Data not received");
