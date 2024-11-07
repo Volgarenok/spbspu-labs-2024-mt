@@ -8,7 +8,7 @@ int main(int argc, char** argv)
   size_t groups[64]{};
   unsigned int x = 67'108'864;
   std::mt19937 gn(41);
-  for (size_t i = 0; i < 1e7; ++i)
+  for (size_t i = 0; i < 1e8; ++i)
   {
     ++groups[gen.generate_next() / x];
   }
@@ -16,5 +16,6 @@ int main(int argc, char** argv)
   {
     std::cout << i << "---" << groups[i] << '\n';
   }
+
   return 0;
 }

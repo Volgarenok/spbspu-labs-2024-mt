@@ -2,12 +2,25 @@
 #include <bitset>
 #include <array>
 
-poly510 form_mod_poly();
-std::array< poly510, 256 > form_deg2(const poly510& mod_poly);
-poly510 mod_mult(const poly510& mod_poly, const poly510& poly1, const poly510& poly2);
+template < size_t N >
+std::bitset< N > form_mod_poly()
+{
+  static_assert(N >= 256, "Invalid poly size, size must be 256 or greater");
+  std::bitset< N > mod_poly{};
+  mod_poly[0] = 1;
+  mod_poly[3] = 1;
+  mod_poly[7] = 1;
+  mod_poly[31] = 1;
+  mod_poly[255] = 1;
+  return mod_poly;
+}
 
-const poly510 lrnd32::mod_poly = form_mod_poly();
-const std::array< poly510, 256 > lrnd32::deg2 = form_deg2(lrnd32::mod_poly);
+std::array< poly512, 256 > form_deg2(const poly512& mod_poly);
+poly512 mod_mult(const poly512& mod_poly, const poly512& poly1, const poly512& poly2);
+
+const poly512 lrnd32::mod_poly512 = form_mod_poly< 512 >();
+const poly256 lrnd32::mod_poly256 = form_mod_poly< 256 >();
+const std::array< poly512, 256 > lrnd32::deg2 = form_deg2(lrnd32::mod_poly512);
 
 lrnd32::lrnd32(size_t seed):
   poly{},
@@ -25,7 +38,7 @@ unsigned int lrnd32::generate_next()
     poly <<= 1;
     if (poly[255])
     {
-      poly ^= mod_poly;
+      poly ^= mod_poly256;
     }
     generated_number_ <<= 1;
     if (poly[0])
@@ -38,13 +51,13 @@ unsigned int lrnd32::generate_next()
 
 void lrnd32::set_start_value(size_t seed)
 {
-  poly.reset();
+  poly512 poly{};
   poly[0] = 1;
   for (size_t i = 0; basic_offset_; ++i)
   {
     if (basic_offset_ & 1)
     {
-      poly = mod_mult(mod_poly, poly, deg2[i]);
+      poly = mod_mult(mod_poly512, poly, deg2[i]);
     }
     basic_offset_ >>= 1;
   }
@@ -57,16 +70,17 @@ void lrnd32::set_start_value(size_t seed)
   {
     if (seed & 1)
     {
-      poly = mod_mult(mod_poly, poly, deg2[i]);
+      poly = mod_mult(mod_poly512, poly, deg2[i]);
     }
     seed >>= 1;
   }
+  this->poly = poly256(poly.to_string().substr(256, 256));
   return;
 }
 
-poly510 mod_mult(const poly510& mod_poly, const poly510& poly1, const poly510& poly2)
+poly512 mod_mult(const poly512& mod_poly, const poly512& poly1, const poly512& poly2)
 {
-  poly510 res_poly{}, temp_poly{};
+  poly512 res_poly{}, temp_poly{};
   for (size_t i = 0; i < 256; ++i)
   {
     if (poly1[i])
@@ -75,7 +89,7 @@ poly510 mod_mult(const poly510& mod_poly, const poly510& poly1, const poly510& p
       res_poly ^= temp_poly;
     }
   }
-  for (size_t i = 509; i > 255; --i)
+  for (size_t i = 511; i > 255; --i)
   {
     if (res_poly[i])
     {
@@ -86,20 +100,9 @@ poly510 mod_mult(const poly510& mod_poly, const poly510& poly1, const poly510& p
   return res_poly;
 }
 
-poly510 form_mod_poly()
+std::array< poly512, 256 > form_deg2(const poly512& mod_poly)
 {
-  poly510 mod_poly{};
-  mod_poly[0] = 1;
-  mod_poly[3] = 1;
-  mod_poly[7] = 1;
-  mod_poly[31] = 1;
-  mod_poly[255] = 1;
-  return mod_poly;
-}
-
-std::array< poly510, 256 > form_deg2(const poly510& mod_poly)
-{
-  std::array< poly510, 256 > deg2{};
+  std::array< poly512, 256 > deg2{};
 
   deg2[0][1] = 1;
   for (size_t i = 1; i < 256; ++i)
