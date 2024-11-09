@@ -18,19 +18,36 @@ std::bitset< N > form_mod_poly()
 std::array< poly512, 256 > form_deg2(const poly512& mod_poly);
 poly512 mod_mult(const poly512& mod_poly, const poly512& poly1, const poly512& poly2);
 
+const size_t lrnd32::basic_offset_ = 183758644ull;
 const poly512 lrnd32::mod_poly512 = form_mod_poly< 512 >();
 const poly256 lrnd32::mod_poly256 = form_mod_poly< 256 >();
 const std::array< poly512, 256 > lrnd32::deg2 = form_deg2(lrnd32::mod_poly512);
 
-lrnd32::lrnd32(size_t seed):
+lrnd32::lrnd32():
   poly{},
-  basic_offset_{ 183758644 },
   generated_number_{}
 {
-  set_start_value(seed);
+  this->seed(41);
 }
 
-unsigned int lrnd32::generate_next()
+lrnd32::lrnd32(result_type seed):
+  poly{},
+  generated_number_{}
+{
+  this->seed(seed);
+}
+
+unsigned int lrnd32::max()
+{
+  return 0xffffffffu;
+}
+
+unsigned int lrnd32::min()
+{
+  return 0x00000000u;
+}
+
+unsigned int lrnd32::operator()()
 {
   generated_number_ = 0;
   for (size_t i = 0; i < 32; ++i)
@@ -49,17 +66,17 @@ unsigned int lrnd32::generate_next()
   return generated_number_;
 }
 
-void lrnd32::set_start_value(size_t seed)
+void lrnd32::seed(result_type seed)
 {
   poly512 poly{};
   poly[0] = 1;
-  for (size_t i = 0; basic_offset_; ++i)
+  size_t offset = basic_offset_;
+  for (size_t i = 0; offset; ++i, offset >>= 1)
   {
-    if (basic_offset_ & 1)
+    if (offset & 1)
     {
       poly = mod_mult(mod_poly512, poly, deg2[i]);
     }
-    basic_offset_ >>= 1;
   }
 
   if (!seed)
