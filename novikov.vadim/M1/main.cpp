@@ -8,7 +8,7 @@
 #include "AreaComputer.hpp"
 #include "StringFunctions.hpp"
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
   if (argc == 1 || argc > 3)
   {
