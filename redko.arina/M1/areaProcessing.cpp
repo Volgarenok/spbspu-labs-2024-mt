@@ -3,12 +3,12 @@
 #include <random>
 #include <thread>
 
-bool redko::isPointInCircle(point_t p, double radius)
+bool redko::isPointInCircle(Point p, double radius)
 {
-  return pow(p.first, 2) + pow(p.second, 2) <= pow(radius, 2);
+  return pow(p.x, 2) + pow(p.y, 2) <= pow(radius, 2);
 }
 
-void redko::fillWithRandomPoints(double radius, size_t tries, int seed, std::vector< point_t > & dest)
+void redko::fillWithRandomPoints(double radius, size_t tries, int seed, std::vector< Point > & dest)
 {
   std::default_random_engine eng(seed);
   std::uniform_real_distribution< double > doubleDist(-radius, radius);
@@ -34,7 +34,7 @@ double redko::calculateCircleArea(double radius, size_t numOfThreads, size_t tri
   size_t trPerTh = tries / numOfThreads;
   size_t lastTr = trPerTh + tries % numOfThreads;
 
-  std::vector< point_t > points;
+  std::vector< Point > points;
   points.reserve(tries);
   fillWithRandomPoints(radius, tries, seed, points);
   point_it currP = points.begin();
