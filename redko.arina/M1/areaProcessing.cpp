@@ -3,7 +3,7 @@
 #include <random>
 #include <thread>
 
-bool redko::isPointInCircle(Point p, double radius)
+bool redko::isPointInCircle(Point p, int radius)
 {
   return pow(p.x, 2) + pow(p.y, 2) <= pow(radius, 2);
 }
@@ -13,7 +13,7 @@ void redko::fillWithRandomPoints(double radius, size_t tries, int seed, std::vec
   std::default_random_engine eng(seed);
   std::uniform_real_distribution< double > doubleDist(-radius, radius);
 
-  for (int i = 0; i < tries; ++i)
+  for (size_t i = 0; i < tries; ++i)
   {
     double x = doubleDist(eng);
     double y = doubleDist(eng);
@@ -21,13 +21,13 @@ void redko::fillWithRandomPoints(double radius, size_t tries, int seed, std::vec
   }
 }
 
-void redko::countPointsInCircle(double radius, point_it begin, size_t numOfPoints, size_it dest)
+void redko::countPointsInCircle(int radius, point_it begin, size_t numOfPoints, size_it dest)
 {
   using namespace std::placeholders;
   *dest = std::count_if(begin, begin + numOfPoints, std::bind(isPointInCircle, _1, radius));
 }
 
-double redko::calculateCircleArea(double radius, size_t numOfThreads, size_t tries, int seed)
+double redko::calculateCircleArea(int radius, size_t numOfThreads, size_t tries, int seed)
 {
   std::vector< std::thread > threads;
   threads.reserve(numOfThreads - 1);
@@ -54,7 +54,7 @@ double redko::calculateCircleArea(double radius, size_t numOfThreads, size_t tri
   }
 
   size_t pointsInCircle = std::accumulate(counts.cbegin(), counts.cend(), 0);
-  double frameArea = pow(2 * radius, 2);
-  double circleArea = frameArea * (static_cast< double >(pointsInCircle) / static_cast< double >(tries));
+  int frameArea = pow(2 * radius, 2);
+  double circleArea = static_cast< double >(frameArea) * (static_cast< double >(pointsInCircle) / static_cast< double >(tries));
   return circleArea;
 }
