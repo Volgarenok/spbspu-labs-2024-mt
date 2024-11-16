@@ -1,5 +1,6 @@
 #include "areaProcessing.hpp"
 #include <functional>
+#include <algorithm>
 #include <random>
 #include <thread>
 
@@ -40,7 +41,7 @@ double redko::calculateCircleArea(int radius, size_t numOfThreads, size_t tries,
   point_it currP = points.begin();
   std::vector< size_t > counts(numOfThreads);
   size_it currCnt = counts.begin();
-  for (int i = 0; i < numOfThreads - 1; ++i)
+  for (size_t i = 0; i < numOfThreads - 1; ++i)
   {
     threads.emplace_back(countPointsInCircle, radius, currP, trPerTh, currCnt);
     currP += trPerTh;
