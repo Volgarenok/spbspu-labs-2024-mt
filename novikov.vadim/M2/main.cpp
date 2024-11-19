@@ -59,6 +59,7 @@ int main(int argc, const char* argv[])
     commands["circle"] = std::bind(cmd::circle, _1, _2, std::ref(circles));
     commands["set"] = std::bind(cmd::set, _1, _2, std::ref(circle_sets));
     commands["show"] = std::bind(cmd::show, _1, _2, std::cref(circles));
+    commands["showset"] = std::bind(cmd::showset, _1, _2, std::cref(circles), std::cref(circle_sets));
   }
 
   std::string cmd;

@@ -17,6 +17,7 @@ namespace novikov
     void circle(std::istream& in, std::ostream& out, circle_collection_t& circles);
     void set(std::istream& in, std::ostream& out, circle_set_collection_t& circle_sets);
     void show(std::istream& in, std::ostream& out, const circle_collection_t& circles);
+    void showset(std::istream& in, std::ostream& out, const circle_collection_t& circles, const circle_set_collection_t& circle_sets);
   }	  
 }
 

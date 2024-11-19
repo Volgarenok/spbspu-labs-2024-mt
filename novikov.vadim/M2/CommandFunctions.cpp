@@ -78,3 +78,20 @@ void novikov::cmd::show(std::istream& in, std::ostream& out, const circle_collec
     throw std::invalid_argument("Круга " + circle_name + " не существует!");
   }
 }
+
+void novikov::cmd::showset(std::istream& in, std::ostream& out, const circle_collection_t& circles, const circle_set_collection_t& circle_sets)
+{
+  std::string set_name;
+  in >> set_name;
+
+  if (!in)
+  {
+    throw std::invalid_argument("Ошибка ввода!");
+  }
+
+  auto circle_set = circle_sets.at(set_name);
+  std::transform(circle_set.cbegin(), circle_set.cend(), std::ostream_iterator< Circle >(out, "\n"), [&circles](const std::string& name)
+  {
+    return circles.at(name);
+  });
+}
