@@ -38,3 +38,10 @@ std::ostream& novikov::operator<<(std::ostream& out, const Circle& circle)
   out << circle.radius << " " << circle.center;
   return out;
 }
+
+novikov::Frame novikov::getFrame(const Circle& circle)
+{
+  const Point left_down = {circle.center.x - static_cast<ptrdiff_t>(circle.radius), circle.center.y - static_cast<ptrdiff_t>(circle.radius)};
+  const Point up_right = {circle.center.y + static_cast<ptrdiff_t>(circle.radius), circle.center.y + static_cast<ptrdiff_t>(circle.radius)};
+  return {left_down, up_right};
+}
