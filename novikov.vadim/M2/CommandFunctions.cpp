@@ -5,15 +5,15 @@
 #include <stdexcept>
 #include <cstddef>
 #include <SizeType.hpp>
+#include "Circle.hpp"
 
 void novikov::cmd::circle(std::istream& in, std::ostream& out, circle_collection_t& circles)
 {
   std::string name;
   SizeType r;
-  ptrdiff_t x;
-  ptrdiff_t y;
+  Point c;
 
-  in >> name >> r >> x >> y;
+  in >> name >> r >> c;
 
   if (!in)
   {
@@ -30,7 +30,7 @@ void novikov::cmd::circle(std::istream& in, std::ostream& out, circle_collection
     throw std::invalid_argument("Такой круг уже существует!");
   }
 
-  circles[name] = {r.size, x, y};
+  circles[name] = {r.size, c};
   out << "Создана новая фигура " << name << "\n";
 }
 
@@ -94,4 +94,24 @@ void novikov::cmd::showset(std::istream& in, std::ostream& out, const circle_col
   {
     return circles.at(name);
   });
+}
+
+void novikov::cmd::frame(std::istream& in, std::ostream& out, const circle_collection_t& circles)
+{
+  std::string circle_name;
+  in >> circle_name;
+
+  if (!in)
+  {
+    throw std::invalid_argument("Ошибка ввода!");
+  }
+
+  try
+  {
+    out << getFrame(circles.at(circle_name)) << "\n";
+  }
+  catch (const std::out_of_range&)
+  {
+    throw std::invalid_argument("Круга " + circle_name + " не существует!");
+  }
 }
