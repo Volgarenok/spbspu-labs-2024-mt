@@ -1,5 +1,6 @@
 #include "Circle.hpp"
 #include <istream>
+#include <ostream>
 #include "SizeType.hpp"
 
 std::istream& novikov::operator>>(std::istream& in, Circle& circle)
@@ -12,20 +13,16 @@ std::istream& novikov::operator>>(std::istream& in, Circle& circle)
   }
 
   SizeType radius;
-  ptrdiff_t x;
-  ptrdiff_t y;
+  Point center;
 
-  in >> radius >> x >> y;
+  in >> radius >> center;
 
   if (!in)
   {
     return in;
   }
 
-  circle.radius = radius.size;
-  circle.x = x;
-  circle.y = y;
-
+  circle = {radius.size, center};
   return in;
 }
 
@@ -38,6 +35,6 @@ std::ostream& novikov::operator<<(std::ostream& out, const Circle& circle)
     return out;
   }
 
-  out << circle.radius << " (" << circle.x << " " << circle.y << ")";
+  out << circle.radius << " " << circle.center;
   return out;
 }

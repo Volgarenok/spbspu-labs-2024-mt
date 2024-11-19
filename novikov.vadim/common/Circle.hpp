@@ -1,16 +1,14 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
 
-#include <cstddef>
-#include <iosfwd>
+#include "Point.hpp"
 
 namespace novikov
 {
   struct Circle
   {
     size_t radius;
-    ptrdiff_t x;
-    ptrdiff_t y;
+    Point center;
   };
 
   std::istream& operator>>(std::istream& in, Circle& circle);
