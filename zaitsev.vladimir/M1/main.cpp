@@ -1,12 +1,9 @@
-#include <chrono>
-#include <thread>
 #include <iostream>
-#include <vector>
-#include <numeric>
+#include <chrono>
 #include <iomanip>
-#include <cstdlib>
+#include <string>
 #include "lrnd32.hpp"
-#include "pts_in_circle_counter.hpp"
+#include "monte_carlo.hpp"
 
 int main(int argc, char** argv)
 {
@@ -43,47 +40,30 @@ int main(int argc, char** argv)
     std::cerr << "Iterations number unable to be zero\n";
   }
 
-  unsigned long long radius{};
-  unsigned long long threads{};
+  std::string r, thrds;
   std::cout << std::setprecision(3) << std::fixed;
   std::chrono::time_point< std::chrono::high_resolution_clock> start_{};
   try
   {
-    while (std::cin >> radius >> threads)
+    while (std::cin >> r >> thrds)
     {
-      if (!std::cin || !radius || !threads)
+      if (!std::cin || r[0]=='-' || thrds[0]=='-')
       {
-        throw std::invalid_argument("Invalid conditions");
+        std::cerr << "Invalid conditions\n";
+        return 1;
       }
-      std::vector< size_t > counters(threads, 0);
-      std::vector< std::thread >thrds;
-      std::vector< lrnd32 >thrdss;
-      thrds.reserve(threads - 1);
-      size_t iters_per_thread = iterations / threads;
-      lrnd32 basic_generator(seed);
+      unsigned long long radius = std::stoull(r);
+      unsigned long long threads = std::stoull(thrds);
+      zaitsev::lrnd32 generator(seed);
       auto start = std::chrono::high_resolution_clock::now();
-
-      for (size_t i = 0; i < threads - 1; ++i)
-      {
-        thrds.emplace_back(pts_in_circle_counter, radius, iters_per_thread, basic_generator, counters.begin() + i);
-        basic_generator.discard(iterations);
-      }
-      pts_in_circle_counter(radius, iters_per_thread + iterations % iters_per_thread, basic_generator, counters.end() - 1);
-      for (auto&& thrd : thrds)
-      {
-        thrd.join();
-      }
-
-      size_t counter = std::accumulate(counters.cbegin(), counters.cend(), 0);
+      double area = zaitsev::calc_area(radius, iterations, threads, generator);
       auto end = std::chrono::high_resolution_clock::now();
-      auto lasts = std::chrono::duration_cast< std::chrono::microseconds >(end - start);
-      std::cout << lasts.count()/1000.0 << " " << static_cast<double>(counter) / iterations * radius * radius * 4 << "\n";
+      std::cout << std::chrono::duration_cast< std::chrono::microseconds >(end - start).count() /1000.0 << " " << area << "\n";
     }
   }
   catch (const std::exception& e)
   {
     std::cerr << e.what() << "\n";
   }
-
   return 0;
 }

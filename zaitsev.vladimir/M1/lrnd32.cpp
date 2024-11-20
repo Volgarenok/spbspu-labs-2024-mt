@@ -2,6 +2,9 @@
 #include <bitset>
 #include <array>
 
+using poly512 = std::bitset< 512 >;
+using poly256 = std::bitset< 256 >;
+
 template < size_t N >
 std::bitset< N > form_mod_poly() noexcept
 {
@@ -18,80 +21,80 @@ std::bitset< N > form_mod_poly() noexcept
 std::array< poly512, 256 > form_deg2(const poly512& mod_poly) noexcept;
 poly512 mod_mult(const poly512& mod_poly, const poly512& poly1, const poly512& poly2) noexcept;
 
-const poly512 lrnd32::mod_poly512 = form_mod_poly< 512 >();
-const poly256 lrnd32::mod_poly256 = form_mod_poly< 256 >();
-const unsigned long long lrnd32::mod_poly256_ull[4] = {0x8000000000000000, 0x0, 0x0, 0x80000089};
-const std::array< poly512, 256 > lrnd32::deg2 = form_deg2(lrnd32::mod_poly512);
+const poly512 zaitsev::lrnd32::mod_poly512_ = form_mod_poly< 512 >();
+const poly256 zaitsev::lrnd32::mod_poly256_ = form_mod_poly< 256 >();
+const unsigned long long zaitsev::lrnd32::mod_poly256_ull_[4] = {0x8000000000000000, 0x0, 0x0, 0x80000089};
+const std::array< poly512, 256 > zaitsev::lrnd32::deg2_ = form_deg2(lrnd32::mod_poly512_);
 
-lrnd32::lrnd32():
-  poly{},
+zaitsev::lrnd32::lrnd32():
+  poly_{},
   generated_number_{}
 {
   this->seed(41);
 }
 
-lrnd32::lrnd32(size_t seed):
-  poly{},
-  poly_ull{},
+zaitsev::lrnd32::lrnd32(size_t seed):
+  poly_{},
+  poly_ull_{},
   generated_number_{}
 {
   this->seed(seed);
 }
 
-unsigned int lrnd32::max() noexcept
+unsigned int zaitsev::lrnd32::max() noexcept
 {
   return 0xffffffffu;
 }
 
-unsigned int lrnd32::min() noexcept
+unsigned int zaitsev::lrnd32::min() noexcept
 {
   return 0x00000000u;
 }
 
-unsigned int lrnd32::operator()() noexcept
+unsigned int zaitsev::lrnd32::operator()() noexcept
 {
   generated_number_ = 0;
   for (size_t i = 0; i < 32; ++i)
   {
-    poly <<= 1;
+    poly_ <<= 1;
     generated_number_ <<= 1;
-    if (poly[255])
+    if (poly_[255])
     {
-      poly ^= mod_poly256;
+      poly_ ^= mod_poly256_;
       generated_number_ |= 1;
     }
   }
   return generated_number_;
 }
 
-unsigned int lrnd32::operator()(bool) noexcept
+unsigned int zaitsev::lrnd32::operator()(bool) noexcept
 {
   generated_number_ = 0;
   for (size_t i = 0; i < 32; ++i)
   {
-    poly_ull[0] <<= 1;
-    poly_ull[0] |= bool(poly_ull[1] & 0x8000000000000000);
+    poly_ull_[0] <<= 1;
+    poly_ull_[0] |= bool(poly_ull_[1] & 0x8000000000000000);
 
-    poly_ull[1] <<= 1;
-    poly_ull[1] |= bool(poly_ull[2] & 0x8000000000000000);
+    poly_ull_[1] <<= 1;
+    poly_ull_[1] |= bool(poly_ull_[2] & 0x8000000000000000);
 
-    poly_ull[2] <<= 1;
-    poly_ull[2] |= bool(poly_ull[3] & 0x8000000000000000);
+    poly_ull_[2] <<= 1;
+    poly_ull_[2] |= bool(poly_ull_[3] & 0x8000000000000000);
 
-    poly_ull[3] <<= 1;
+    poly_ull_[3] <<= 1;
 
     generated_number_ <<= 1;
-    if (poly_ull[0] & 0x8000000000000000)
+    if (poly_ull_[0] & 0x8000000000000000)
     {
-      poly_ull[0] ^= mod_poly256_ull[0];
-      poly_ull[3] ^= mod_poly256_ull[3];
+      poly_ull_[0] ^= mod_poly256_ull_[0];
+      poly_ull_[3] ^= mod_poly256_ull_[3];
       generated_number_ |= 1;
     }
   }
   return generated_number_;
 }
 
-void lrnd32::seed(size_t seed)
+void zaitsev::lrnd32::seed(size_t seed)
 {
   poly512 poly{};
   poly[0] = 1;
@@ -100,33 +103,28 @@ void lrnd32::seed(size_t seed)
   {
     if (offset & 1)
     {
-      poly = mod_mult(mod_poly512, poly, deg2[i]);
+      poly = mod_mult(mod_poly512_, poly, deg2_[i]);
     }
-  }
-
-  if (!seed)
-  {
-    return;
   }
 
   for (size_t i = 32; seed; ++i)
   {
     if (seed & 1)
     {
-      poly = mod_mult(mod_poly512, poly, deg2[i]);
+      poly = mod_mult(mod_poly512_, poly, deg2_[i]);
     }
     seed >>= 1;
   }
-  this->poly = poly256(poly.to_string().substr(256, 256));
+  this->poly_ = poly256(poly.to_string().substr(256, 256));
 
   for (size_t i = 0; i < 4; ++i)
   {
     unsigned long long temp = 1;
     for (size_t j = 0; j < 64; ++j)
     {
-      if (this->poly[i * 64 + j])
+      if (this->poly_[i * 64 + j])
       {
-        poly_ull[3 - i] |= temp;
+        poly_ull_[3 - i] |= temp;
       }
       temp <<= 1;
     }
@@ -134,18 +132,18 @@ void lrnd32::seed(size_t seed)
   return;
 }
 
-void lrnd32::discard(size_t z)
+void zaitsev::lrnd32::discard(size_t z)
 {
-  poly512 poly(this->poly.to_string());
+  poly512 poly(this->poly_.to_string());
   for (size_t i = 0; z; ++i)
   {
     if (z & 1)
     {
-      poly = mod_mult(mod_poly512, poly, deg2[5 + i]);
+      poly = mod_mult(mod_poly512_, poly, deg2_[5 + i]);
     }
     z >>= 1;
   }
-  this->poly = poly256(poly.to_string().substr(256, 256));
+  this->poly_ = poly256(poly.to_string().substr(256, 256));
 
   return;
 }
