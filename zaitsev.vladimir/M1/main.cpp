@@ -1,29 +1,44 @@
 #include <iostream>
 #include <random>
+#include <iomanip>
+#include <cstdlib>
+#include<string>
 #include "lrnd32.hpp"
-
 
 int main(int argc, char** argv)
 {
-  lrnd32 gen(41);
-  lrnd32 gen2(41);
-  gen2.discard(10);
-  size_t groups[64]{};
-  unsigned int x = 67'108'864;
-  std::mt19937 gn(41);
-  std::uniform_real_distribution<double> urd(-5, 5);
-  for (size_t i = 0; i < 20; ++i)
-  {
-    std::cout<<i<<"  " << gen() << '\n';
+  size_t iterations{};
+  size_t seed{};
+  try {
+    switch (argc)
+    {
+    case 3:
+      if (argv[2][0] == '-')
+      {
+        throw std::invalid_argument("");
+      }
+      seed = std::strtoull(argv[2], nullptr, 10);
+    case 2:
+      if (argv[1][0] == '-')
+      {
+        throw std::invalid_argument("");
+      }
+      iterations = std::strtoull(argv[1], nullptr, 10);
+      break;
+    default:
+      std::cerr << "Invalid number of arguments\n";
+      return 1;
+    }
   }
-  std::cout << "\n\n";
-  for (size_t i = 0; i < 10; ++i)
+  catch (const std::exception&)
   {
-    std::cout << i + 10 << "  " << gen2() << '\n';
+    std::cerr << "Failed to convert arguments to ull\n";
+    return 1;
   }
-  /*for (size_t i = 0; i < 64; ++i)
+
+  if (!iterations)
   {
-    std::cout << i << "---" << groups[i] << '\n';
-  }*/
+    std::cerr << "Iterations number unable to be zero\n";
+  }
   return 0;
 }
