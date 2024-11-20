@@ -11,7 +11,7 @@ public:
   using result_type = unsigned int;
 
   lrnd32();
-  lrnd32(lrnd32&&) = delete;
+  lrnd32(lrnd32&&) = default;
   lrnd32(const lrnd32&) = default;
   explicit lrnd32(size_t seed);
   ~lrnd32() = default;

@@ -1,4 +1,5 @@
 #include <chrono>
+#include <thread>
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -44,8 +45,6 @@ int main(int argc, char** argv)
 
   unsigned long long radius{};
   unsigned long long threads{};
-  lrnd32 basic_generator(seed);
-  std::vector<size_t>counters{};
   std::cout << std::setprecision(3) << std::fixed;
   std::chrono::time_point< std::chrono::high_resolution_clock> start_{};
   try
@@ -56,9 +55,25 @@ int main(int argc, char** argv)
       {
         throw std::invalid_argument("Invalid conditions");
       }
-      std::vector<size_t>counters(threads, 0);
+      std::vector< size_t > counters(threads, 0);
+      std::vector< std::thread >thrds;
+      std::vector< lrnd32 >thrdss;
+      thrds.reserve(threads - 1);
+      size_t iters_per_thread = iterations / threads;
+      lrnd32 basic_generator(seed);
       auto start = std::chrono::high_resolution_clock::now();
-      pts_in_circle_counter(radius, iterations, basic_generator, counters.begin());
+
+      for (size_t i = 0; i < threads - 1; ++i)
+      {
+        thrds.emplace_back(pts_in_circle_counter, radius, iters_per_thread, basic_generator, counters.begin() + i);
+        basic_generator.discard(iterations);
+      }
+      pts_in_circle_counter(radius, iters_per_thread + iterations % iters_per_thread, basic_generator, counters.end() - 1);
+      for (auto&& thrd : thrds)
+      {
+        thrd.join();
+      }
+
       size_t counter = std::accumulate(counters.cbegin(), counters.cend(), 0);
       auto end = std::chrono::high_resolution_clock::now();
       auto lasts = std::chrono::duration_cast< std::chrono::microseconds >(end - start);
