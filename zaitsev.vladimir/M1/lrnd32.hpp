@@ -1,7 +1,6 @@
 #ifndef LRND32
 #define LRND32
 #include <bitset>
-#include <array>
 
 using poly512 = std::bitset< 512 >;
 using poly256 = std::bitset< 256 >;
@@ -17,17 +16,21 @@ public:
   explicit lrnd32(result_type seed);
   ~lrnd32() = default;
 
-  static unsigned int max();
-  static unsigned int min();
-  result_type operator()();
-  void seed(result_type seed);
+  static unsigned int max() noexcept;
+  static unsigned int min() noexcept;
+  result_type operator()() noexcept;
+  result_type operator()(bool) noexcept;
+  void seed(size_t seed);
+  void discard(size_t seed);
 
 private:
-  static const size_t basic_offset_;
+  static constexpr size_t basic_offset_ = 183758644ull;
   static const poly512 mod_poly512;
   static const poly256 mod_poly256;
+  static const unsigned long long mod_poly256_ull[4];
   static const std::array< poly512, 256 > deg2;
   poly256 poly;
+  unsigned long long poly_ull[4];
   result_type generated_number_;
 };
 
