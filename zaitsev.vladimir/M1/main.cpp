@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
   std::string r, thrds;
   std::cout << std::setprecision(3) << std::fixed;
-  std::chrono::time_point< std::chrono::high_resolution_clock> start_{};
+  std::chrono::time_point< std::chrono::high_resolution_clock > start_{};
   try
   {
     while (std::cin >> r >> thrds)
