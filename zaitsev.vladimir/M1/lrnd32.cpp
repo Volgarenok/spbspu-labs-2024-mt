@@ -30,7 +30,7 @@ lrnd32::lrnd32():
   this->seed(41);
 }
 
-lrnd32::lrnd32(result_type seed):
+lrnd32::lrnd32(size_t seed):
   poly{},
   poly_ull{},
   generated_number_{}

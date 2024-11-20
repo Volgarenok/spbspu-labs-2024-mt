@@ -13,7 +13,7 @@ public:
   lrnd32();
   lrnd32(lrnd32&&) = delete;
   lrnd32(const lrnd32&) = default;
-  explicit lrnd32(result_type seed);
+  explicit lrnd32(size_t seed);
   ~lrnd32() = default;
 
   static unsigned int max() noexcept;
