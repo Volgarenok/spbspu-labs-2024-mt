@@ -6,11 +6,11 @@ namespace piyavkin
   class UnlinkFileGuard
   {
   public:
-    UnlinkFileGuard(int des, char* name);
+    UnlinkFileGuard(int des, const char* name);
     ~UnlinkFileGuard();
   private:
     int des_;
-    char* name_;
+    const char* name_;
   };
 }
 #endif

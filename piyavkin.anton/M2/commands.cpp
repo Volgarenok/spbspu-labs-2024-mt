@@ -1,12 +1,6 @@
 #include "commands.hpp"
-#include <iostream>
-#include <stdexcept>
 #include <cstring>
-#include <string.h>
-#include <string>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 void piyavkin::inputOb(std::istream& in, const std::string& name, circle_t& mp)
 {
@@ -23,11 +17,7 @@ void piyavkin::inputOb(std::istream& in, const std::string& nameSet, set_t& sets
 {
   long long n = 0;
   in >> n;
-  if (!in)
-  {
-    throw std::logic_error("The set is not created");
-  }
-  if (n <= 0)
+  if (!in || n <= 0)
   {
     throw std::logic_error("The set is not created");
   }
@@ -56,15 +46,21 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
   long long th = 0;
   long long tries = 0;
   in >> calcName >> setName >> th >> tries;
-  auto it = sets.find(setName);
-  if (!in || tries <= 0 || th <= 0 || it == sets.end())
+  if (!in || tries <= 0 || th <= 0)
   {
     throw std::logic_error("Incorrect parameters for area command");
   }
+  
+  auto it = sets.find(setName);
+  if (it == sets.end())
+  {
+    throw std::logic_error("Incorrect parameters for area command");
+  }
+  
   std::string str;
   str += "a " + calcName + ' ' + std::to_string(th) + ' ' + std::to_string(tries) + ' ' + it->second.getStr();
   const char* cstr = str.c_str();
-  int bytesSent = write(socket, cstr, strlen(cstr));
+  int bytesSent = send(socket, cstr, strlen(cstr), 0);
   if (bytesSent < 0)
   {
     throw std::logic_error("Error sending data");
@@ -89,18 +85,23 @@ void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int
   {
     std::string msg = "s " + name;
     const char* msgc = msg.c_str();
-    int sizeSend = write(socket, msgc, std::strlen(msgc));
+    int sizeSend = send(socket, msgc, std::strlen(msgc), 0);
     if (sizeSend < 0)
     {
       throw std::logic_error(strerror(errno));
     }
+    
     char buf[1000] = {};
-    int sizeMsg = read(socket, buf, 1000);
+    int sizeMsg = recv(socket, buf, 1000, 0);
     if (sizeMsg <= 0)
     {
       throw std::logic_error("Data not received");
     }
+    
     out << buf << '\n';
-    calcs[name] = std::stod(buf);
+    if (isdigit(buf[0]))
+    {
+      calcs[name] = std::stod(buf);
+    }
   }
 }

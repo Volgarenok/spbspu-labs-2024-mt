@@ -10,6 +10,7 @@ namespace piyavkin
     double y;
   };
   std::ostream& operator<<(std::ostream& out, const point_t& p);
+  
   struct rectangle_t
   {
     point_t ll;

@@ -1,6 +1,5 @@
 #ifndef CHILDCOMMANDS_HPP
 #define CHILDCOMMANDS_HPP
-#include <string>
 #include <random>
 #include <map>
 #include <thread>

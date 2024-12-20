@@ -1,20 +1,11 @@
-#include <cerrno>
 #include <cstring>
-#include <exception>
 #include <iostream>
 #include <functional>
-#include <stdexcept>
-#include <stdio.h>
-#include <string>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <thread>
 #include <unistd.h>
 #include <getpositivenum.hpp>
-#include "createpoints.hpp"
 #include "commands.hpp"
-#include "getsquare.hpp"
 #include "childcommands.hpp"
 #include "unlinkfileguard.hpp"
 
@@ -30,9 +21,13 @@ int main(int argc, char* argv[])
   {
     seed = piyavkin::getPositiveNum(argv[1]);
   }
+  
   const char* path = "piyavkin.anton/M2/1.socket";
+  struct sockaddr_un addr = {0};
+  addr.sun_family = AF_UNIX;
+  strncpy(addr.sun_path, path, sizeof(addr.sun_path));
+  
   pid_t child_pid = fork();
-  std::cout << child_pid << '\n';
   using namespace piyavkin;
   if (child_pid < 0)
   {
@@ -42,50 +37,54 @@ int main(int argc, char* argv[])
   else if (child_pid == 0)
   {
     int listening{socket(AF_UNIX, SOCK_STREAM, 0)};
-    if (listening < 0)
+    if (listening <= 0)
     {
-      std::cerr << "Child process has failed\n";
-      return 1;
+      std::cerr << "Server creation is failed: " << strerror(errno) << '\n';
+      return 2;
     }
-    struct sockaddr_un addr = {0};
-    addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
-    UnlinkFileGuard fg(listening, addr.sun_path);
+    
     if (bind(listening, reinterpret_cast< const sockaddr* >(&addr), sizeof(addr)) < 0)
     {
       std::cerr << "Binding failed: " << strerror(errno) << '\n';
-      return 1;
+      return 2;
     }
+    
+    UnlinkFileGuard fg(listening, addr.sun_path);
     if (listen(listening, 1000) < 0)
     {
       std::cerr << "Listening failed: " << strerror(errno) << '\n';
-      return 1;
+      return 2;
     }
+    
     int sock{accept(listening, nullptr, 0)};
-    if (sock < 0)
+    if (sock <= 0)
     {
       close(sock);
-      std::cerr << "Acceptance not completed\n";
-      return 1;
+      std::cerr << "Acceptance not completed: " << strerror(errno) << '\n';
+      return 2;
     }
+    
     std::map< char, std::function< void(calc_t&, const std::string&, std::map< std::string, std::thread >&) > > childCmd;
     calc_t calcs;
     std::minstd_rand gen(seed);
     std::map< std::string, std::thread > threads;
+    
     {
       using namespace std::placeholders;
       childCmd['a'] = std::bind(calculateAreaSet, _1, std::ref(gen), _2, _3);
-      childCmd['s'] = std::bind(sendStatus, _1, _2, listening, _3);
-      childCmd['w'] = std::bind(waitStatus, _1, _2, listening, _3);
+      childCmd['s'] = std::bind(sendStatus, _1, _2, sock, _3);
+      childCmd['w'] = std::bind(waitStatus, _1, _2, sock, _3);
     }
+    
     char buffer[1000] = {};
     while (true)
     {
-      int sizeMsg = read(sock, buffer, 1000);
+      int sizeMsg = recv(sock, buffer, 1000, 0);
       if (sizeMsg <= 0)
       {
-        std::cerr << "Data not received\n";
-        return 1;
+        close(sock);
+        std::cerr << "Data not received: " << strerror(errno) << '\n';
+        return 3;
       }
       try
       {
@@ -95,7 +94,6 @@ int main(int argc, char* argv[])
       catch (const std::out_of_range&)
       {
         close(sock);
-        std::cout << "x2" << '\n';
         for (auto&& x: threads)
         {
           x.second.join();
@@ -110,28 +108,27 @@ int main(int argc, char* argv[])
           x.second.join();
         }
         std::cerr << e.what() << '\n';
-        return 3;
+        return 4;
       }
     }
   }
   else
   {
     int sock{socket(AF_UNIX, SOCK_STREAM, 0)};
-    if (!sock)
+    if (sock <= 0)
     {
-      std::cerr << "Failed to create socket\n";
+      std::cerr << "Failed to create socket: " << strerror(errno) << '\n';
       return 2;
     }
-    struct sockaddr_un addr = {0};
-    addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     UnlinkFileGuard fg(sock, addr.sun_path);
+    
     sleep(1);
     if (connect(sock, reinterpret_cast< sockaddr* >(&addr), sizeof(addr)) < 0)
     {
       std::cerr << "Connection failed: " << strerror(errno) << '\n';
       return 2;
     }
+    
     circle_t circles;
     set_t sets;
     calc_t calcs;
@@ -147,6 +144,7 @@ int main(int argc, char* argv[])
       cmd["area"] = std::bind(calcArea, _1, std::ref(sets), std::ref(calcs), sock);
       cmd["status"] = std::bind(recStatus, _1, std::ref(std::cout), std::ref(calcs), sock);
     }
+
     std::string name;
     while (std::cin >> name)
     {
@@ -161,10 +159,11 @@ int main(int argc, char* argv[])
       std::cin.clear();
       std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
+    
     const char* m = "exit";
     if (send(sock, m, std::strlen(m), 0) < 0)
     {
-      std::cerr << "The child process failed to terminate\n";
+      std::cerr << "The child process failed to terminate: " << strerror(errno) << '\n';
       return 4;
     }
   }

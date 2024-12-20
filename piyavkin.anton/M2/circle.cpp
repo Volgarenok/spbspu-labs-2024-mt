@@ -22,6 +22,7 @@ std::istream& piyavkin::operator>>(std::istream& in, Circle& c)
   {
     return in;
   }
+  
   double x = 0;
   double y = 0;
   double r = 0;

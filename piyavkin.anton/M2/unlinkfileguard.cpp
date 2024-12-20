@@ -2,7 +2,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-piyavkin::UnlinkFileGuard::UnlinkFileGuard(int des, char* name):
+piyavkin::UnlinkFileGuard::UnlinkFileGuard(int des, const char* name):
   des_(des),
   name_(name)
 {}
