@@ -79,8 +79,7 @@ int main(int argc, char* argv[])
     char buffer[1000] = {};
     while (true)
     {
-      int sizeMsg = recv(sock, buffer, 1000, 0);
-      if (sizeMsg <= 0)
+      if (recv(sock, buffer, 1000, 0) < 0)
       {
         close(sock);
         std::cerr << "Data not received: " << strerror(errno) << '\n';
@@ -90,6 +89,7 @@ int main(int argc, char* argv[])
       {
         std::string tn(std::string(buffer).substr(2));
         childCmd.at(buffer[0])(calcs, tn, threads);
+        memset(buffer, '\0', sizeof(buffer));
       }
       catch (const std::out_of_range&)
       {
@@ -142,7 +142,8 @@ int main(int argc, char* argv[])
       cmd["showset"] = std::bind(output< Set >, _1, std::ref(std::cout), std::cref(sets));
       cmd["frameset"] = std::bind(outputFrame< Set >, _1, std::ref(std::cout), std::cref(sets));
       cmd["area"] = std::bind(calcArea, _1, std::ref(sets), std::ref(calcs), sock);
-      cmd["status"] = std::bind(recStatus, _1, std::ref(std::cout), std::ref(calcs), sock);
+      cmd["status"] = std::bind(recStatus, _1, std::ref(std::cout), std::ref(calcs), sock, false);
+      cmd["wait"] = std::bind(recStatus, _1, std::ref(std::cout), std::ref(calcs), sock, true);
     }
 
     std::string name;

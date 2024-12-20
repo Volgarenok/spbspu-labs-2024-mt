@@ -4,8 +4,11 @@
 #include "getsquare.hpp"
 #include "createpoints.hpp"
 
-void getMonteCarlo(piyavkin::calc_t& calc, std::minstd_rand& gen, piyavkin::data_t& points, const piyavkin::rectangle_t& r, size_t tries, const piyavkin::Set& st, size_t th, const std::string& name)
+void getMonteCarlo(piyavkin::calc_t& calc, std::minstd_rand& gen, size_t tries, const piyavkin::Set& st, size_t th, const std::string& name)
 {
+  using namespace piyavkin;
+  data_t points;
+  rectangle_t r = st.getFrame();
   createPoints(gen, points, r, tries);
   double square = getSquare(points, st, r, th);
   calc[name] = square;
@@ -22,9 +25,7 @@ void piyavkin::calculateAreaSet(calc_t& calc, std::minstd_rand& gen, const std::
   size_t tries = std::stoull(tn.substr(curr, tn.find(' ', curr)));
   
   Set st = parse(tn.substr(tn.find(' ', curr) + 1));
-  data_t points;
-  rectangle_t r = st.getFrame();
-  ths[name] = std::thread(getMonteCarlo, std::ref(calc), std::ref(gen), std::ref(points), std::cref(r), tries, st, th, std::cref(name));
+  ths[name] = std::thread(getMonteCarlo, std::ref(calc), std::ref(gen), tries, st, th, std::cref(name));
 }
 
 void piyavkin::sendStatus(calc_t& calc, const std::string& str, int sock, std::map< std::string, std::thread >& ths)
@@ -34,8 +35,7 @@ void piyavkin::sendStatus(calc_t& calc, const std::string& str, int sock, std::m
   if (it == calc.end())
   {
     const char* msg = "<IN PROGRESS>";
-    int sizeSend = send(sock, msg, std::strlen(msg), 0);
-    if (sizeSend < 0)
+    if (send(sock, msg, std::strlen(msg), 0) < 0)
     {
       throw std::logic_error(strerror(errno));
     }
@@ -55,9 +55,10 @@ void piyavkin::sendStatus(calc_t& calc, const std::string& str, int sock, std::m
 
 void piyavkin::waitStatus(calc_t& calc, const std::string& str, int sock, std::map< std::string, std::thread >& ths)
 {
-  ths[str].join();
-  ths.erase(str);
-  std::string squareStr(std::to_string(calc.find(str)->second));
+  std::string newStr = str.substr(0, str.find(' '));
+  ths[newStr].join();
+  ths.erase(newStr);
+  std::string squareStr(std::to_string(calc.find(newStr)->second));
   if (send(sock, squareStr.c_str(), squareStr.size(), 0) < 0)
   {
     throw std::logic_error(strerror(errno));

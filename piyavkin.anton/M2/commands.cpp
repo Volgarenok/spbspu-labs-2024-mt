@@ -68,7 +68,7 @@ void piyavkin::calcArea(std::istream& in, set_t& sets, calc_t& calcs, int socket
   calcs[calcName] = 0;
 }
 
-void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int socket)
+void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int socket, bool wait)
 {
   std::string name = "";
   in >> name;
@@ -83,17 +83,24 @@ void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int
   }
   else
   {
-    std::string msg = "s " + name;
+    std::string msg; 
+    if (!wait)
+    {
+      msg += "s ";
+    }
+    else
+    {
+      msg += "w ";
+    }
+    msg += name;
     const char* msgc = msg.c_str();
-    int sizeSend = send(socket, msgc, std::strlen(msgc), 0);
-    if (sizeSend < 0)
+    if (send(socket, msgc, std::strlen(msgc), 0) < 0)
     {
       throw std::logic_error(strerror(errno));
     }
     
     char buf[1000] = {};
-    int sizeMsg = recv(socket, buf, 1000, 0);
-    if (sizeMsg <= 0)
+    if (recv(socket, buf, 1000, 0) < 0)
     {
       throw std::logic_error("Data not received");
     }

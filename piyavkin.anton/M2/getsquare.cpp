@@ -17,9 +17,11 @@ double piyavkin::getSquare(const data_t& points, const Set& set, const rectangle
 {
   std::vector< std::thread > ths;
   ths.reserve(countThreads - 1);
+  
   const size_t tries = points.size();
   size_t perTh = tries / countThreads;
   size_t lastTh = perTh + tries % countThreads;
+  
   size_t i = 0;
   std::vector< size_t > results(countThreads, 0);
   for (; i < countThreads - 1; ++i)
@@ -27,7 +29,8 @@ double piyavkin::getSquare(const data_t& points, const Set& set, const rectangle
     ths.emplace_back(countPoints, std::cref(points), std::cref(set), i * perTh, perTh, std::ref(results[i]));
   }
   countPoints(points, set, i * perTh, lastTh, results.back());
-  for (auto && th: ths)
+  
+  for (auto&& th: ths)
   {
     th.join();
   }
