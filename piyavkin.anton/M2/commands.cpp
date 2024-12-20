@@ -99,8 +99,8 @@ void piyavkin::recStatus(std::istream& in, std::ostream& out, calc_t& calcs, int
       throw std::logic_error(strerror(errno));
     }
     
-    char buf[1000] = {};
-    if (recv(socket, buf, 1000, 0) < 0)
+    char buf[1024] = {};
+    if (recv(socket, buf, 1024, 0) < 0)
     {
       throw std::logic_error("Data not received");
     }

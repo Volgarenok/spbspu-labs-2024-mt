@@ -25,7 +25,7 @@ void piyavkin::calculateAreaSet(calc_t& calc, std::minstd_rand& gen, const std::
   size_t tries = std::stoull(tn.substr(curr, tn.find(' ', curr)));
   
   Set st = parse(tn.substr(tn.find(' ', curr) + 1));
-  ths[name] = std::thread(getMonteCarlo, std::ref(calc), std::ref(gen), tries, st, th, std::cref(name));
+  ths[name] = std::thread(getMonteCarlo, std::ref(calc), std::ref(gen), tries, st, th, name);
 }
 
 void piyavkin::sendStatus(calc_t& calc, const std::string& str, int sock, std::map< std::string, std::thread >& ths)

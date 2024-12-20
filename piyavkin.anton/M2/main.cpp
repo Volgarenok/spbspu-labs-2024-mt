@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
   struct sockaddr_un addr = {0};
   addr.sun_family = AF_UNIX;
   strncpy(addr.sun_path, path, sizeof(addr.sun_path));
+  constexpr size_t sizeBuf = 1024;
   
   pid_t child_pid = fork();
   using namespace piyavkin;
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
     }
     
     UnlinkFileGuard fg(listening, addr.sun_path);
-    if (listen(listening, 1000) < 0)
+    if (listen(listening, sizeBuf) < 0)
     {
       std::cerr << "Listening failed: " << strerror(errno) << '\n';
       return 2;
@@ -76,10 +77,10 @@ int main(int argc, char* argv[])
       childCmd['w'] = std::bind(waitStatus, _1, _2, sock, _3);
     }
     
-    char buffer[1000] = {};
+    char buffer[sizeBuf] = {};
     while (true)
     {
-      if (recv(sock, buffer, 1000, 0) < 0)
+      if (recv(sock, buffer, sizeBuf, 0) < 0)
       {
         close(sock);
         std::cerr << "Data not received: " << strerror(errno) << '\n';
